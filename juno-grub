@@ -1,0 +1,27 @@
+#!/bin/bash
+product_model="$(sed -e 's/^\s*//g' -e 's/\s*$//g' "/sys/devices/virtual/dmi/id/product_name" | tr ' ,/-' '_')"
+
+case "$product_model" in
+    N130BU|N131BU|N130WU|N131WU|N13xWU|N13xZU|N140BU|N141BU|N140WU|N141WU|N14xWU|N140ZU|N141ZU|N14xZU|N13_N140ZU|N140ZU|N141ZU|N140CU|N141CU|N14xCU|N150ZU|N151ZU|N15xZU|N150CU|N151CU|N15xCU|N240GU|N240WU|N24_25GU|NL40GU|NL41GU|NL4xGU|NL40_50GU|NL40CU|NL41CU|NL4xCU|NL40_50CU)
+    echo "i8042.reset i8042.nomux i8042.nopnp i8042.noloop intel_idle.max_cstate=1"
+    ;;
+    NL50RU|NL51RU|NL5xRU|NL4x_NL5xRU)
+    echo "i8042.reset i8042.nomux i8042.nopnp i8042.noloop iommu=off"
+    ;;
+    To_be_filled_by_O.E.M.) #JUVE
+    if [ "$(dmidecode -s processor-version | grep -Po 'N4000')" == 'N4000' ]; then
+    	echo "i8042.reset i8042.nomux i8042.nopnp i8042.noloop intel_idle.max_cstate=1";
+    elif [ "$(dmidecode -s processor-version | grep -Po 'N3350')" == 'N3350' ]; then
+    	echo "i8042.reset i8042.nomux i8042.nopnp i8042.noloop intel_idle.max_cstate=1";
+    fi
+    ;;
+    To_Be_Filled_By_O.E.M.)
+    echo "iommu=pt nvme_core.default_ps_max_latency_us=0"
+    ;;
+    NP50D5|NP5x_NP7xHH_HJ_HK|NP5x_NP6x_NP7xHP|NP5x_NP6x_NP7xPNP|PD5x_7xPNP_PNR_PNN_PNT|PD5x_7xPNP_PNN_PNT|NH5xVR|PE60RNE_RND_RNC|NP5x_NP6x_NP7xRNJ_RNH|NP5x_NP6x_NP7xRNA_RNB)
+    echo "i8042.reset i8042.nomux i8042.nopnp i8042.noloop modprobe.blacklist=psmouse"
+    ;;
+    NV4XMZ|NV4XMB_ME_MZ|NV4XMJ_MK_MH|NV4xPZ|NS50MU|NS50_70MU|NL40LU|NL41LU|NL4xLU|NL4x_NL5xLU|NL50NU|NL51NU|NL5xNU|NL4x_NL5xNU|NL4x_NLxNU|NJ5x_NJ7xLU|NJ5x_NJ7xCU|NJ50_70CU|PCX0DX|PCx0Dx|PC5x_7xHP_HR_HS|NP50DE_DB|NH5x_7xDPx|NLx0MU|NJx0MU|NS5x_NS7xPU|NS5x_NS7xAU|NLxxPUx|NJx0PU|X370SNx|NP5x_60_7x_RNx1)
+    echo "i8042.reset i8042.nomux i8042.nopnp i8042.noloop"
+    ;;
+esac

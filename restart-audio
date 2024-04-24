@@ -1,0 +1,10 @@
+#!/bin/sh
+  
+case "$1" in
+    post)
+        DEVICE_ID=`lspci -D |grep Audio|awk '{print $1}'`
+	echo 1 > /sys/bus/pci/devices/${DEVICE_ID}/remove;
+	echo 1 > /sys/bus/pci/rescan;
+	killall pulseaudio
+	;;
+esac

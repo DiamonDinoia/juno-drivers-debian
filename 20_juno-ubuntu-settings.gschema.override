@@ -1,0 +1,18 @@
+##########################
+# Juno Computers US & UK #
+##########################
+
+[org.gnome.desktop.interface]
+clock-show-date = true
+clock-format = '12h'
+clock-show-weekday = true
+show-battery-percentage = true
+
+[org.gnome.shell]
+enabled-extensions = ['disconnect-wifi@kgshank.net', 'lockkeys@vaina.lt', 'refresh-wifi@kgshank.net', 'PRIME_GPU_profile_selector@alexispurslane.github.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'freq-boost-switch@metal03326', 'caffeine@patapon.info']
+
+[org.gnome.shell.extensions.dash-to-dock:ubuntu]
+click-action='minimize'
+
+[org.gnome.settings-daemon.plugins.power]
+ambient-enabled = false

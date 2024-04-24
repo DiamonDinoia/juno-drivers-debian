@@ -1,0 +1,12 @@
+[Unit]
+Description=Disable CPU Turbo
+After=power-profiles-daemon.service
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/turbo-off
+RemainAfterExit=true
+#RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
