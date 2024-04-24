@@ -1,4 +1,4 @@
-juno-drivers (0.5.24~debian) unstable; urgency=low
+juno-drivers (0.5.24-1~debian) unstable; urgency=low
 
   * Disable Power Profiles rules on desktops 
   * Added pulseaudio-utils dependency
