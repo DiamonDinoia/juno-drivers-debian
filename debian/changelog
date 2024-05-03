@@ -1,9 +1,10 @@
-juno-drivers (0.5.24-2~debian) unstable; urgency=low
+juno-drivers (0.5.26~debian) unstable; urgency=low
 
   * Disable Power Profiles rules on desktops 
   * Added pulseaudio-utils dependency
   * Added disable-cpu-turbo.service
   * Removed some useless dependencies
   * juno-pp: Wifi Power Management
+  * Removed irqbalance
   
- -- Juno <junocomputers@outlook.com>  Wed, 27 Apr 2024 08:01:52 +0000
+ -- Juno <junocomputers@outlook.com>  Fri, 3 May 2024 08:01:52 +0000
