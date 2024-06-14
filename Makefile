@@ -11,7 +11,8 @@ install-core:
 	install -dm755 $(DESTDIR)/usr/share/juno-tlp
 	install -dm755 $(DESTDIR)/usr/share/nv41/udev/
 	install -dm755 $(DESTDIR)/usr/share/junocomp
-	install -Dpm 0644 20_juno-ubuntu-settings.gschema.override $(DESTDIR)/usr/share/junocomp/20_juno-ubuntu-settings.gschema.override
+	install -dm755 $(DESTDIR)/usr/share/glib-2.0/schemas/
+	install -Dpm 0644 20_juno-ubuntu-settings.gschema.override $(DESTDIR)/usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override
 	install -Dpm 0644 juno-audio-fix.conf $(DESTDIR)/usr/share/junocomp/juno-audio-fix.conf
 	install -Dpm 0755 restart-audio $(DESTDIR)/usr/share/junocomp/restart-audio
 	install -Dpm 0755 junoppas $(DESTDIR)/usr/bin/junoppas
@@ -51,3 +52,4 @@ uninstall:
 	rm -f $(DESTDIR)/usr/bin/juno-pp
 	rm -f $(DESTDIR)/etc/systemd/system/juno-pp.service
 	rm -f $(DESTDIR)/etc/systemd/system/disable-cpu-turbo.service
+	rm -f $(DESTDIR)/usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override
