@@ -149,13 +149,13 @@ if grep -q 'msr' "/etc/modules";
 fi
 
 #DISABLE APPORT
-if grep -q "enabled=1" "/etc/default/apport" ; then
+#if grep -q "enabled=1" "/etc/default/apport" ; then
 
-        echo 'Disabling Apport';
-        sed -i 's/enabled=1/enabled=0/' /etc/default/apport;
+#        echo 'Disabling Apport';
+#        sed -i 's/enabled=1/enabled=0/' /etc/default/apport;
 
-        else echo 'Apport is already disabled';
-fi
+#        else echo 'Apport is already disabled';
+#fi
 
 
 #AMDGPU Acceleration
