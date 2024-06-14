@@ -124,7 +124,6 @@ case "$product_model" in
     ;;
 esac
 
-
 #Fix i2c_hid after suspend
 case "$product_model" in
     NP5x_NP6x_NP7xHP|NP5x_NP7xHH_HJ_HK)
@@ -158,54 +157,6 @@ if grep -q "enabled=1" "/etc/default/apport" ; then
         else echo 'Apport is already disabled';
 fi
 
-#Enable Fancontrol on Brutus
-#case "$product_model" in
-#    To_Be_Filled_By_O.E.M.)
-#    if [ -f /etc/fancontrol ]; then
-#       rm /etc/fancontrol;
-#       cp /usr/share/fancontrol/brutus /etc/fancontrol;
-#       else
-#       cp /usr/share/fancontrol/brutus /etc/fancontrol;
-#    fi;
-#    
-#    if grep -Fxq "nct6775" /etc/modules;
-#    then
-#    echo "nct6775 found - skipping";
-#    else
-#    echo "adding nct6775 to /etc/modules";
-#    echo nct6775 >> /etc/modules;
-#    fi
-#    modprobe nct6775
-#    ;;
-#    Default_string)
-#    if [ -f /etc/fancontrol ]; then
-#       rm /etc/fancontrol;
-#       cp /usr/share/fancontrol/mercury /etc/fancontrol;
-#       else
-#       cp /usr/share/fancontrol/mercury /etc/fancontrol;
-#    fi;
-#    
-#    if grep -Fxq "nct6775" /etc/modules;
-#    then
-#    echo "nct6775 found - skipping";
-#    else
-#    echo "adding nct6775 to /etc/modules";
-#    echo nct6775 >> /etc/modules;
-#    fi
-#    modprobe nct6775
-#    ;;
-#    TB_4000)
-#    if [ -f /etc/fancontrol ]; then
-#       rm /etc/fancontrol;
-#       cp /usr/share/fancontrol/brutus-4000 /etc/fancontrol;
-#       else
-#       cp /usr/share/fancontrol/brutus-4000 /etc/fancontrol;
-#    fi
-#    ;;
-#esac 
-
-#systemctl start fancontrol.service
-#systemctl restart fancontrol.service  
 
 #AMDGPU Acceleration
 case "$product_model" in
@@ -248,3 +199,6 @@ fi
 
 # Install Brasero icons for Juno Fan Indicator
 cp /usr/share/brasero/icons/hicolor/scalable/status/brasero-disc-* /usr/share/icons/hicolor/scalable/status/
+
+# Update Schemas
+glib-compile-schemas /usr/share/glib-2.0/schemas/
