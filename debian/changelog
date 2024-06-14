@@ -6,5 +6,6 @@ juno-drivers (0.5.26~debian) unstable; urgency=low
   * Removed some useless dependencies
   * juno-pp: Wifi Power Management
   * Removed irqbalance
+  * Added juno schemas
   
- -- Juno <junocomputers@outlook.com>  Fri, 3 May 2024 08:01:52 +0000
+ -- Juno <junocomputers@outlook.com>  Fri, 14 Jun 2024 08:01:52 +0000
