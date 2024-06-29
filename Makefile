@@ -12,6 +12,7 @@ install-core:
 	install -dm755 $(DESTDIR)/usr/share/nv41/udev/
 	install -dm755 $(DESTDIR)/usr/share/junocomp
 	install -dm755 $(DESTDIR)/usr/share/glib-2.0/schemas/
+	install -dm755 $(DESTDIR)/etc/pipewire
 	install -Dpm 0644 20_juno-ubuntu-settings.gschema.override $(DESTDIR)/usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override
 	install -Dpm 0644 juno-audio-fix.conf $(DESTDIR)/usr/share/junocomp/juno-audio-fix.conf
 	install -Dpm 0755 restart-audio $(DESTDIR)/usr/share/junocomp/restart-audio
@@ -30,6 +31,7 @@ install-core:
 	install -Dpm 0644 juno-pp.service $(DESTDIR)/etc/systemd/system/juno-pp.service
 	install -Dpm 0644 disable-cpu-turbo.service $(DESTDIR)/etc/systemd/system/disable-cpu-turbo.service
 	install -Dpm 0755 juno-grub $(DESTDIR)/usr/share/junocomp/juno-grub
+	install -Dpm 0644 pipewire/pipewire-pulse.conf $(DESTDIR)/etc/pipewire/pipewire-pulse.conf
 
 install: install-core
 
@@ -53,3 +55,4 @@ uninstall:
 	rm -f $(DESTDIR)/etc/systemd/system/juno-pp.service
 	rm -f $(DESTDIR)/etc/systemd/system/disable-cpu-turbo.service
 	rm -f $(DESTDIR)/usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override
+	rm -f $(DESTDIR)/etc/pipewire/pipewire-pulse.conf
