@@ -55,4 +55,4 @@ uninstall:
 	rm -f $(DESTDIR)/etc/systemd/system/juno-pp.service
 	rm -f $(DESTDIR)/etc/systemd/system/disable-cpu-turbo.service
 	rm -f $(DESTDIR)/usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override
-	rm -f $(DESTDIR)/etc/pipewire/pipewire-pulse.conf.d
+	rm -R $(DESTDIR)/etc/pipewire/pipewire-pulse.conf.d
