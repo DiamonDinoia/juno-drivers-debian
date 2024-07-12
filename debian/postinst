@@ -73,7 +73,7 @@ case "$product_model" in
 esac
 
 sed -i -e '/GRUB_CMDLINE_LINUX_DEFAULT/d' /etc/default/grub;
-sed -i '/\GRUB_DISTRIBUTOR/a GRUB_CMDLINE_LINUX_DEFAULT="quiet splash $(/usr/share/junocomp/juno-grub)"' /etc/default/grub
+sed -i '/\GRUB_DISTRIBUTOR/a GRUB_CMDLINE_LINUX_DEFAULT="quiet splash $(/usr/share/junocomp/juno-grub) fsck.mode=force fsck.repair=yes"' /etc/default/grub
 update-grub
 
 echo "GRUB has been updated"
