@@ -1,5 +1,6 @@
-juno-drivers (0.5.28~debian) unstable; urgency=low
+juno-drivers (0.5.29~debian) unstable; urgency=low
 
-  * Added pipewire-pulse.conf
+  * Added swap resume
+  * Renamed power-profiles.rules to juno-pp.rules
   
- -- Juno <junocomputers@outlook.com>  Thu, 4 Jul 2024 08:01:52 +0000
+ -- Juno <junocomputers@outlook.com>  Thu, 18 Jul 2024 08:01:52 +0000
