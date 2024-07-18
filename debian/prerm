@@ -14,8 +14,6 @@ if [ -f /etc/modprobe.d/juno-audio-fix.conf ]; then
    rm /etc/modprobe.d/juno-audio-fix.conf;
 fi
 
-add-apt-repository ppa:libreoffice/ppa --remove -y
-
 # Remove extensions
 if [ -d /usr/share/gnome-shell/extensions/drive-menu@gnome-shell-extensions.gcampax.github.com ];then
    rm -Rf /usr/share/gnome-shell/extensions/drive-menu@gnome-shell-extensions.gcampax.github.com;
