@@ -1,4 +1,4 @@
-juno-drivers (0.5.30~debian) unstable; urgency=low
+juno-drivers (0.5.31~debian) unstable; urgency=low
 
   * Added swap resume
   * Renamed power-profiles.rules to juno-pp.rules
