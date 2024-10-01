@@ -14,8 +14,8 @@ update-pciids
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 #Add User to Audio
-echo "Adding $USER to Audio & Input"
-sed 's/#EXTRA_GROUPS.*/EXTRA_GROUPS="audio input clevo-keyboard adm"/' -i /etc/adduser.conf
+echo "Adding $USER to Input"
+sed 's/#EXTRA_GROUPS.*/EXTRA_GROUPS="input clevo-keyboard adm"/' -i /etc/adduser.conf
 sed 's/#ADD_EXTRA_GROUPS=1/ADD_EXTRA_GROUPS=1/g' -i /etc/adduser.conf
 
 #GRUB
@@ -23,26 +23,6 @@ echo "Updating Grub"
 sleep 3
 
 case "$product_model" in
-#    N130BU|N131BU|N130WU|N131WU|N13xWU|N13xZU|N140BU|N141BU|N140WU|N141WU|N14xWU|N140ZU|N141ZU|N14xZU|N13_N140ZU|N140ZU|N141ZU|N140CU|N141CU|N14xCU|N150ZU|N151ZU|N15xZU|N150CU|N151CU|N15xCU|N240GU|N240WU|N24_25GU|NL40GU|NL41GU|NL4xGU|NL40_50GU|NL40CU|NL41CU|NL4xCU|NL40_50CU)
-#    sed -i -e '/GRUB_CMDLINE_LINUX_DEFAULT/d' /etc/default/grub
-#    sed -i '/\GRUB_DISTRIBUTOR/a GRUB_CMDLINE_LINUX_DEFAULT="quiet splash i8042.reset i8042.nomux i8042.nopnp i8042.noloop intel_idle.max_cstate=1"' /etc/default/grub
-#    ;;
-#    NL50RU|NL51RU|NL5xRU|NL4x_NL5xRU)
-#    echo "Nyx 15 AMD ($chassis)"
-#    sed -i -e '/GRUB_CMDLINE_LINUX_DEFAULT/d' /etc/default/grub
-#    sed -i '/\GRUB_DISTRIBUTOR/a GRUB_CMDLINE_LINUX_DEFAULT="quiet splash i8042.reset i8042.nomux i8042.nopnp i8042.noloop iommu=off"' /etc/default/grub
-#    ;;
-#    To_be_filled_by_O.E.M.) #JUVE
-#    if [ "$(dmidecode -s processor-version | grep -Po 'N4000')" == 'N4000' ]; then
-#	echo " Juve v1 ($chassis)";
-#	sed -i -e '/GRUB_CMDLINE_LINUX_DEFAULT/d' /etc/default/grub;
-#    	sed -i '/\GRUB_DISTRIBUTOR/a GRUB_CMDLINE_LINUX_DEFAULT="quiet splash i8042.reset i8042.nomux i8042.nopnp i8042.noloop intel_idle.max_cstate=1"' /etc/default/grub;
-#    elif [ "$(dmidecode -s processor-version | grep -Po 'N3350')" == 'N3350' ]; then
-#	echo " Juve v2 ($chassis)";
-#	sed -i -e '/GRUB_CMDLINE_LINUX_DEFAULT/d' /etc/default/grub;
-#   	sed -i '/\GRUB_DISTRIBUTOR/a GRUB_CMDLINE_LINUX_DEFAULT="quiet splash i8042.reset i8042.nomux i8042.nopnp i8042.noloop intel_idle.max_cstate=1"' /etc/default/grub;
-#    fi
-#    ;;
     NUC10i3FNH|NUC10i5FNH|NUC10i7FNH|NUC10i3FNK|NUC10i5FNK|NUC10i7FNK)
     echo "Olympia 8th Gen ($chassis)"
     if 
@@ -53,22 +33,6 @@ case "$product_model" in
 	echo 'load-module module-alsa-sink device=hw:0,0' >> /etc/pulse/default.pa;
 	echo "Olympia (10th Gen) headphone jack drivers installed";
     fi
-    ;;
-#   To_Be_Filled_By_O.E.M.)
-#   echo "Brutus ($chassis)"
-#    sed -i -e '/GRUB_CMDLINE_LINUX_DEFAULT/d' /etc/default/grub
-#    sed -i '/\GRUB_DISTRIBUTOR/a GRUB_CMDLINE_LINUX_DEFAULT="quiet splash iommu=pt nvme_core.default_ps_max_latency_us=0"' /etc/default/grub
-#    ;;
-#    NP50D5|NP5x_NP7xHH_HJ_HK|NP5x_NP6x_NP7xHP|NP5x_NP6x_NP7xPNP|PD5x_7xPNP_PNR_PNN_PNT|PD5x_7xPNP_PNN_PNT|NH5xVR|PE60RNE_RND_RNC|NP5x_NP6x_NP7xRNJ_RNH|NP5x_NP6x_NP7xRNA_RNB)
-#    sed -i -e '/GRUB_CMDLINE_LINUX_DEFAULT/d' /etc/default/grub
-#    sed -i '/\GRUB_DISTRIBUTOR/a GRUB_CMDLINE_LINUX_DEFAULT="quiet splash i8042.reset i8042.nomux i8042.nopnp i8042.noloop modprobe.blacklist=psmouse"' /etc/default/grub
-#    ;;
-#    NV4XMZ|NV4XMB_ME_MZ|NV4XMJ_MK_MH|NV4xPZ|NS50MU|NS50_70MU|NL40LU|NL41LU|NL4xLU|NL4x_NL5xLU|NL50NU|NL51NU|NL5xNU|NL4x_NL5xNU|NL4x_NLxNU|NJ5x_NJ7xLU|NJ5x_NJ7xCU|NJ50_70CU|PCX0DX|PCx0Dx|PC5x_7xHP_HR_HS|NP50DE_DB|NH5x_7xDPx|NLx0MU|NJx0MU|NS5x_NS7xPU|NS5x_NS7xAU|NLxxPUx|NJx0PU|X370SNx)
-#    sed -i -e '/GRUB_CMDLINE_LINUX_DEFAULT/d' /etc/default/grub
-#    sed -i '/\GRUB_DISTRIBUTOR/a GRUB_CMDLINE_LINUX_DEFAULT="quiet splash i8042.reset i8042.nomux i8042.nopnp i8042.noloop"' /etc/default/grub
-#    ;;
-    *)
-    echo "Model not recognized ($product_model)"
     ;;
 esac
 
@@ -148,37 +112,6 @@ if grep -q 'msr' "/etc/modules";
      echo msr >> /etc/modules;
      modprobe msr;
 fi
-
-#DISABLE APPORT
-#if grep -q "enabled=1" "/etc/default/apport" ; then
-
-#        echo 'Disabling Apport';
-#        sed -i 's/enabled=1/enabled=0/' /etc/default/apport;
-
-#        else echo 'Apport is already disabled';
-#fi
-
-
-#AMDGPU Acceleration
-case "$product_model" in
-    To_Be_Filled_By_O.E.M.|TB_4000)
-if 
-	grep 'TearFree' /usr/share/X11/xorg.conf.d/10-amdgpu.conf;
-then 
-	echo "TearFree already exist in 10-amdgpu.conf";
-else
-	sed -i '/\EndSection/i Option "TearFree" "true"' /usr/share/X11/xorg.conf.d/10-amdgpu.conf;
-fi
-
-if 
-	grep 'DRI' /usr/share/X11/xorg.conf.d/10-amdgpu.conf;
-then 
-	echo "DRI3 already exist in 10-amdgpu.conf";
-else
-	sed -i '/\EndSection/i Option "DRI" "3"' /usr/share/X11/xorg.conf.d/10-amdgpu.conf;
-fi
-;;
-esac
 
 #Enable LM92
 if ! grep -Fxq 'lm92' '/etc/modules' ; then
