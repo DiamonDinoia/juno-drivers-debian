@@ -1,6 +1,6 @@
 [Unit]
 Description=Disable CPU Turbo
-After=power-profiles-daemon.service
+#After=power-profiles-daemon.service
 
 [Service]
 Type=idle
