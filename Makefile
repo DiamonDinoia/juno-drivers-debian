@@ -26,9 +26,6 @@ install-core:
 	install -Dpm 0755 gaudible/gaudible-flatpak.py $(DESTDIR)/usr/bin/gaudible-flatpak
 	install -Dpm 0644 gaudible/gaudible-deb.desktop $(DESTDIR)/etc/xdg/autostart/gaudible-deb.desktop
 	install -Dpm 0644 gaudible/gaudible-flatpak.desktop $(DESTDIR)/etc/xdg/autostart/gaudible-flatpak.desktop
-	install -Dpm 0644 juno-pp.rules $(DESTDIR)/etc/udev/rules.d/juno-pp.rules
-	install -Dpm 0755 juno-pp $(DESTDIR)/usr/bin/juno-pp
-	install -Dpm 0644 juno-pp.service $(DESTDIR)/etc/systemd/system/juno-pp.service
 	install -Dpm 0644 disable-cpu-turbo.service $(DESTDIR)/etc/systemd/system/disable-cpu-turbo.service
 	install -Dpm 0755 juno-grub $(DESTDIR)/usr/share/junocomp/juno-grub
 	install -Dpm 0644 pipewire-pulse.conf $(DESTDIR)/etc/pipewire/pipewire-pulse.conf.d/pipewire-pulse.conf
@@ -49,9 +46,6 @@ uninstall:
 	rm -f $(DESTDIR)/etc/xdg/autostart/gaudible-deb.desktop
 	rm -f $(DESTDIR)/usr/bin/gaudible-deb
 	rm -f $(DESTDIR)/usr/bin/gaudible-flatpak
-	rm -f $(DESTDIR)/etc/udev/rules.d/juno-pp.rules
-	rm -f $(DESTDIR)/usr/bin/juno-pp
-	rm -f $(DESTDIR)/etc/systemd/system/juno-pp.service
 	rm -f $(DESTDIR)/etc/systemd/system/disable-cpu-turbo.service
 	rm -f $(DESTDIR)/usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override
 	rm -R $(DESTDIR)/etc/pipewire/pipewire-pulse.conf.d
