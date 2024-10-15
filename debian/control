@@ -57,6 +57,7 @@ Depends: juno-info,
 	pulseaudio-utils,
 	ffmpegthumbnailer,
 	acpi,
-	juno-pp
+	juno-pp,
+	geoclue-position
 Homepage: https://junocomputers.com
 Description: Debian Drivers for Juno Computers.
