@@ -11,6 +11,9 @@ show-battery-percentage = true
 [org.gnome.mutter]
 experimental-features = ['scale-monitor-framebuffer']
 
+[org.gnome.nautilus.icon-view]
+default-zoom-level = 'medium'
+
 [org.gnome.shell]
 enabled-extensions = ['caffeine@patapon.info', 'dash-to-dock@micxgx.gmail.com', 'ubuntu-appindicators@ubuntu.com']
 
@@ -18,4 +21,4 @@ enabled-extensions = ['caffeine@patapon.info', 'dash-to-dock@micxgx.gmail.com', 
 click-action='minimize'
 
 [org.gnome.settings-daemon.plugins.power]
-ambient-enabled = false
+sleep-inactive-ac-type = 'nothing'
