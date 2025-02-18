@@ -45,7 +45,6 @@ echo "GRUB has been updated"
 
 # Enable Systemd
 systemctl enable thermald
-systemctl enable irqbalance
 
 # Disable Power Profiles Rules for Desktops
 case "$product_model" in
