@@ -13,8 +13,6 @@ Depends: juno-info,
 	lm-sensors,
 	exfat-fuse,
 	libfsapfs-utils,
-	hfsplus,
-	hfsutils,
 	ntfs-3g,
 	hfsprogs,
 	rar,
@@ -53,11 +51,10 @@ Depends: juno-info,
 	gstreamer1.0-pulseaudio,
 	gstreamer1.0-pipewire,
 	gstreamer1.0-vaapi,
-	brasero-common,
 	pulseaudio-utils,
 	ffmpegthumbnailer,
-	acpi,
 	juno-pp,
-	geoclue-position
+	geoclue-position,
+	juno-grub
 Homepage: https://junocomputers.com
 Description: Debian Drivers for Juno Computers.
