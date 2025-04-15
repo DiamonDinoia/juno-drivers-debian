@@ -27,7 +27,7 @@ install-core:
 	install -Dpm 0644 gaudible/gaudible-deb.desktop $(DESTDIR)/etc/xdg/autostart/gaudible-deb.desktop
 	install -Dpm 0644 gaudible/gaudible-flatpak.desktop $(DESTDIR)/etc/xdg/autostart/gaudible-flatpak.desktop
 	install -Dpm 0644 disable-cpu-turbo.service $(DESTDIR)/etc/systemd/system/disable-cpu-turbo.service
-	install -Dpm 0755 juno-grub $(DESTDIR)/usr/share/junocomp/juno-grub
+	#install -Dpm 0755 juno-grub $(DESTDIR)/usr/share/junocomp/juno-grub
 	install -Dpm 0644 pipewire-pulse.conf $(DESTDIR)/etc/pipewire/pipewire-pulse.conf.d/pipewire-pulse.conf
 	install -Dpm 0644 resume $(DESTDIR)/etc/initramfs-tools/resume
 
