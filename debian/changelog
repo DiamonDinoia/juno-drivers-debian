@@ -1,5 +1,8 @@
-juno-drivers (0.5.35~debian) unstable; urgency=low
+juno-drivers (0.5.36~debian) unstable; urgency=low
 
-  * Disable suspend on AC & set nautilus zoom to medium
+  * Enabled location by default (GNOME)
+  * Removed irqbalance, acpid, hfs, brasero-common
+  * Added juno-grub
+  * Added dash to dock settings
   
- -- Juno <junocomputers@outlook.com>  Thu, 14 Nov 2024 08:01:52 +0000
+ -- Juno <junocomputers@outlook.com>  Wed, 14 May 2025 08:01:52 +0000
