@@ -2,6 +2,9 @@
 # Juno Computers US & UK #
 ##########################
 
+[org.gnome.desktop.datetime]
+automatic-timezone = true
+
 [org.gnome.desktop.interface]
 clock-show-date = true
 clock-format = '12h'
