@@ -1,8 +1,8 @@
-juno-drivers (0.5.38~debian) unstable; urgency=low
+juno-drivers (0.5.39~debian) unstable; urgency=low
 
-  * Added juno-grub
   * Added dash to dock settings
   * Enabled automatic-timezone
   * Added favorite-apps
+  * Added button-layout
   
  -- Juno <usa@junocomputers.com>  Sun, 17 Aug 2025 08:01:52 +0000
