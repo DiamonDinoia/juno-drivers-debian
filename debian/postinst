@@ -121,17 +121,17 @@ if ! grep -Fxq 'lm92' '/etc/modules' ; then
    else echo 'lm92 already enabled';
 fi
 
-#Enable ec_sys
-#if ! grep -Fxq 'ec_sys' '/etc/modules' ; then
-#   echo 'Adding ec_sys';
-#   echo 'ec_sys' >> /etc/modules;
-#   modprobe ec_sys;
-
-#   else echo 'ec_sys already in /etc/modules';
-#fi
-
-# Install Brasero icons for Juno Fan Indicator
-#cp /usr/share/brasero/icons/hicolor/scalable/status/brasero-disc-* /usr/share/icons/hicolor/scalable/status/
+# Enable touchpad buttons NJ70AU
+case "$product_model" in
+    NJx0AU|NJ7xPU|NJ7xMU)
+    if [ -f /usr/share/X11/xorg.conf.d/60-nj70au-touchpad.conf ]; then
+    rm /usr/share/X11/xorg.conf.d/60-nj70au-touchpad.conf;
+    cp /usr/share/junocomp/60-nj70au-touchpad.conf /usr/share/X11/xorg.conf.d;
+    else
+    cp /usr/share/junocomp/60-nj70au-touchpad.conf /usr/share/X11/xorg.conf.d;
+    fi
+    ;;
+esac
 
 # Update Schemas
 glib-compile-schemas /usr/share/glib-2.0/schemas/

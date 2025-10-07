@@ -13,5 +13,9 @@ if [ -f /etc/udev/rules.d/juno-cpufreq.rules ]; then
    rm /etc/udev/rules.d/juno-cpufreq.rules;
 fi
 
+if [ -f /usr/share/X11/xorg.conf.d/60-nj70au-touchpad.conf ]; then
+   rm /usr/share/X11/xorg.conf.d/60-nj70au-touchpad.conf;
+fi
+
 # Remove juno-grub line and use it from the juno-grub package instead
 sed -r -i '/^GRUB_CMDLINE_LINUX_DEFAULT/ s/(usr|share|junocomp|juno-grub|[/]|[()])|[$]//g' /etc/default/grub

@@ -1,0 +1,17 @@
+[Clevo NJ7xAU]
+MatchUdevType=touchpad
+MatchDMIModalias=dmi:*pnNJx0AU*
+AttrClickMethodAreas=1
+AttrClickMethodClickfinger=0
+
+[Clevo NJ7xMU]
+MatchUdevType=touchpad
+MatchDMIModalias=dmi:*pnNJx0MU*
+AttrClickMethodAreas=1
+AttrClickMethodClickfinger=0
+
+[Clevo NJ7xPU]
+MatchUdevType=touchpad
+MatchDMIModalias=dmi:*pnNJx0PU*
+AttrClickMethodAreas=1
+AttrClickMethodClickfinger=0
