@@ -1,9 +1,9 @@
-juno-drivers (0.5.40~debian) unstable; urgency=low
+juno-drivers (0.5.41~debian) unstable; urgency=low
 
-  * Added dash to dock settings
   * Enabled automatic-timezone
   * Added favorite-apps
   * Added button-layout
   * Added X11 and Wayland touchpad support for NJ7xx models
+  * Added juno-archive-keyring dependency
   
- -- Juno <usa@junocomputers.com>  Tue, 7 Oct 2025 08:01:52 +0000
+ -- Juno <usa@junocomputers.com>  Wed, 29 Oct 2025 08:01:52 +0000

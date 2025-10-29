@@ -55,6 +55,7 @@ Depends: juno-info,
 	ffmpegthumbnailer,
 	juno-pp,
 	geoclue-position,
-	juno-grub
+	juno-grub,
+	juno-archive-keyring
 Homepage: https://junocomputers.com
 Description: Debian Drivers for Juno Computers.
