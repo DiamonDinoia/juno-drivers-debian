@@ -1,3 +1,10 @@
+juno-drivers (0.5.42~debian) unstable; urgency=low
+
+  * Moved juno-fan-indicator & clevo-keyboard-controller from Depends to Suggests
+  * Cleaned up postinst
+
+ -- Juno <usa@junocomputers.com>  Thu, 13 Nov 2025 08:01:52 +0000
+
 juno-drivers (0.5.41~debian) unstable; urgency=low
 
   * Enabled automatic-timezone

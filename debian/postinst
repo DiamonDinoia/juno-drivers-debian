@@ -4,7 +4,6 @@ product_model="$(sed -e 's/^\s*//g' -e 's/\s*$//g' "/sys/devices/virtual/dmi/id/
 chassis="$(hostnamectl | awk 'FNR==3 {print $2}')"
 codename="$(lsb_release -c | awk '{print $2}')"
 de="$(ps axf | grep -Po "env \.*[A-Z]+" | awk '{print $2}' | sort -u)"
-ecsys="$(cat /boot/config-$(uname -r) | grep CONFIG_ACPI_EC)"
 
 #--------------------------------------
 
@@ -36,12 +35,7 @@ case "$product_model" in
     ;;
 esac
 
-#sed -i -e '/GRUB_CMDLINE_LINUX_DEFAULT/d' /etc/default/grub;
-#sed -i '/\GRUB_DISTRIBUTOR/a GRUB_CMDLINE_LINUX_DEFAULT="quiet splash $(/usr/share/junocomp/juno-grub) fsck.mode=force fsck.repair=yes"' /etc/default/grub
-#update-grub
 update-initramfs -u -k all
-
-#echo "GRUB has been updated"
 
 # Enable Systemd
 systemctl enable thermald
@@ -101,16 +95,6 @@ case "$product_model" in
     fi
     ;;
 esac
-
-#MSR Module
-#if grep -q 'msr' "/etc/modules";
-#   then
-#     echo 'msr module exist';
-#   else
-#     echo "Adding msr to modules"
-#     echo msr >> /etc/modules;
-#     modprobe msr;
-#fi
 
 #Enable LM92
 if ! grep -Fxq 'lm92' '/etc/modules' ; then

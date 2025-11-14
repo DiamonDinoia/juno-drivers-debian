@@ -38,9 +38,6 @@ Depends: juno-info,
 	intel-media-va-driver-non-free,
 	cryptsetup,
 	i2c-tools,
-	clevo-keyboard,
-	clevo-keyboard-controller,
-	juno-fan-indicator,
 	thermald,
 	ffmpeg,
 	linux-cpupower,
@@ -54,8 +51,10 @@ Depends: juno-info,
 	pulseaudio-utils,
 	ffmpegthumbnailer,
 	juno-pp,
+	gaudible,
 	geoclue-position,
 	juno-grub,
 	juno-archive-keyring
+Suggests: clevo-keyboard-controller, juno-fan-indicator
 Homepage: https://junocomputers.com
 Description: Debian Drivers for Juno Computers.

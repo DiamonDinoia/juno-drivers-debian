@@ -22,11 +22,6 @@ install-core:
 	install -Dpm 755 turbo/turbo-on $(DESTDIR)/usr/bin/turbo-on
 	install -Dpm 755 turbo/turbo-off $(DESTDIR)/usr/bin/turbo-off
 	install -Dpm 755 turbo/turbo-stat $(DESTDIR)/usr/bin/turbo-stat
-	cp -R gaudible/librem5 $(DESTDIR)/usr/share/sounds
-	install -Dpm 0755 gaudible/gaudible-deb.py $(DESTDIR)/usr/bin/gaudible-deb
-	install -Dpm 0755 gaudible/gaudible-flatpak.py $(DESTDIR)/usr/bin/gaudible-flatpak
-	install -Dpm 0644 gaudible/gaudible-deb.desktop $(DESTDIR)/etc/xdg/autostart/gaudible-deb.desktop
-	install -Dpm 0644 gaudible/gaudible-flatpak.desktop $(DESTDIR)/etc/xdg/autostart/gaudible-flatpak.desktop
 	install -Dpm 0644 disable-cpu-turbo.service $(DESTDIR)/etc/systemd/system/disable-cpu-turbo.service
 	install -Dpm 0644 pipewire-pulse.conf $(DESTDIR)/etc/pipewire/pipewire-pulse.conf.d/pipewire-pulse.conf
 	install -Dpm 0644 resume $(DESTDIR)/etc/initramfs-tools/resume
@@ -43,11 +38,6 @@ uninstall:
 	rm -f $(DESTDIR)/usr/bin/turbo-on
 	rm -f $(DESTDIR)/usr/bin/turbo-off
 	rm -f $(DESTDIR)/usr/bin/turbo-stat
-	rm -R $(DESTDIR)/usr/share/sounds/librem5
-	rm -f $(DESTDIR)/etc/xdg/autostart/gaudible-flatpak.desktop
-	rm -f $(DESTDIR)/etc/xdg/autostart/gaudible-deb.desktop
-	rm -f $(DESTDIR)/usr/bin/gaudible-deb
-	rm -f $(DESTDIR)/usr/bin/gaudible-flatpak
 	rm -f $(DESTDIR)/etc/systemd/system/disable-cpu-turbo.service
 	rm -f $(DESTDIR)/usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override
 	rm -R $(DESTDIR)/etc/pipewire/pipewire-pulse.conf.d
