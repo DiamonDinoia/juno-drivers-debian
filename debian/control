@@ -10,14 +10,13 @@ Priority: optional
 Architecture: amd64
 Depends: juno-info,
 	libimobiledevice-utils,
-	lm-sensors,
 	exfat-fuse,
 	libfsapfs-utils,
 	ntfs-3g,
 	hfsprogs,
 	rar,
-	p7zip-full,
-	p7zip-rar,
+	7zip,
+	7zip-rar,
 	hfsutils-tcltk,
 	unrar,
 	mtp-tools,
@@ -55,6 +54,7 @@ Depends: juno-info,
 	geoclue-position,
 	juno-grub,
 	juno-archive-keyring
+Recommends: steam-devices
 Suggests: clevo-keyboard-controller, juno-fan-indicator
 Homepage: https://junocomputers.com
 Description: Debian Drivers for Juno Computers.
