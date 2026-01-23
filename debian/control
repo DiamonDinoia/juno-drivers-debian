@@ -10,6 +10,7 @@ Priority: optional
 Architecture: amd64
 Depends: juno-info,
 	libimobiledevice-utils,
+	check-battery,
 	exfat-fuse,
 	libfsapfs-utils,
 	ntfs-3g,

@@ -1,4 +1,4 @@
-juno-drivers (0.5.43~debian) unstable; urgency=low
+juno-drivers (0.5.43-1~debian) unstable; urgency=low
 
   * Removed lm-sensors, now part of juno-fan-indicator
 
