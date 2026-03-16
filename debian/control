@@ -2,7 +2,7 @@ Source: juno-drivers
 Section: metapackages
 Priority: optional
 Build-Depends: debhelper
-Maintainer: Giovanni Caligaris <junocomputers@outlook.com>
+Maintainer: Giovanni Caligaris <usa@junocomputers.com>
 
 Package: juno-drivers
 Section: metapackages
@@ -50,12 +50,9 @@ Depends: juno-info,
 	gstreamer1.0-vaapi,
 	pulseaudio-utils,
 	ffmpegthumbnailer,
-	juno-pp,
-	gaudible,
-	geoclue-position,
 	juno-grub,
 	juno-archive-keyring
-Recommends: steam-devices
+Recommends: gaudible, geoclue-position, juno-pp, juno-wallpaper, steam-devices
 Suggests: clevo-keyboard-controller, juno-fan-indicator
 Homepage: https://junocomputers.com
 Description: Debian Drivers for Juno Computers.

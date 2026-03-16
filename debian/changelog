@@ -1,3 +1,9 @@
+juno-drivers (0.5.44~debian) unstable; urgency=low
+
+  * Made gaudible, geoclue-position & juno-pp removable dependencies (Suggests)
+
+ -- Juno <usa@junocomputers.com>  Mon, 16 Mar 2026 08:01:52 +0000
+
 juno-drivers (0.5.43-1~debian) unstable; urgency=low
 
   * Removed lm-sensors, now part of juno-fan-indicator
