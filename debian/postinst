@@ -4,8 +4,6 @@ chassis="$(hostnamectl | awk 'FNR==3 {print $2}')"
 
 #--------------------------------------
 
-update-pciids
-
 #Install Flathub
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
