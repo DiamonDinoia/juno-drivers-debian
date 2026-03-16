@@ -1,3 +1,10 @@
+juno-drivers (0.5.45+local2) unstable; urgency=low
+
+  * Add .gitignore entries for Debian build artifacts
+  * Migrate debhelper compat 9 -> 13
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Fri, 19 Mar 2026 10:05:00 +0000
+
 juno-drivers (0.5.45+local1) unstable; urgency=low
 
   * Drop juno-pp from Recommends (conflicts with power-profiles-daemon)
