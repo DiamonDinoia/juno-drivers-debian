@@ -52,7 +52,7 @@ Depends: juno-info,
 	ffmpegthumbnailer,
 	juno-grub,
 	juno-archive-keyring
-Recommends: gaudible, geoclue-position, juno-pp, juno-wallpaper, steam-devices
+Recommends: gaudible, geoclue-position, juno-wallpaper, steam-devices
 Suggests: clevo-keyboard-controller, juno-fan-indicator
 Homepage: https://junocomputers.com
 Description: Debian Drivers for Juno Computers.
