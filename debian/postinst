@@ -23,14 +23,26 @@ esac
 
 # Enable Systemd
 systemctl enable thermald
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl disable --now disable-cpu-turbo.service >/dev/null 2>&1 || true
+fi
+
+ppd_present=0
+if command -v powerprofilesctl >/dev/null 2>&1 || \
+   [ -e /usr/lib/systemd/system/power-profiles-daemon.service ] || \
+   [ -e /lib/systemd/system/power-profiles-daemon.service ]; then
+    ppd_present=1
+fi
 
 #Rules for ACPI
 case "$product_model" in
-    NL50RU|NL51RU|NL5xRU|NL4x_NL5xRU|NL5xNU|NL4x_NLxNU|NH5xVR)
-    if [ -f /etc/udev/rules.d/juno-cpufreq.rules ]; then
-    rm /etc/udev/rules.d/juno-cpufreq.rules;
+    NL50RU|NL51RU|NL5xRU|NL4x_NL5xRU|NL5xNU|NL4x_NLxNU|NH5xVR|V5xTNC_TND_TNE)
+    if [ "$ppd_present" -eq 1 ]; then
+    rm -f /etc/udev/rules.d/juno-cpufreq.rules;
+    echo "Skipping juno-cpufreq.rules because power-profiles-daemon is present";
     else
-    ln -s /usr/share/nv41/udev/juno-cpufreq.rules /etc/udev/rules.d/juno-cpufreq.rules
+    ln -sfn /usr/share/nv41/udev/juno-cpufreq.rules /etc/udev/rules.d/juno-cpufreq.rules
+    echo "Installed juno-cpufreq.rules";
     fi
     ;;
 esac

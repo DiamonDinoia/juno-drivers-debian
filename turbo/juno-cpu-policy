@@ -1,0 +1,304 @@
+#!/bin/bash
+# Juno Computers
+
+set -euo pipefail
+shopt -s nullglob
+
+INTEL_NO_TURBO="/sys/devices/system/cpu/intel_pstate/no_turbo"
+ACPI_BOOST="/sys/devices/system/cpu/cpufreq/boost"
+CPUFREQ_ROOT="/sys/devices/system/cpu/cpufreq"
+QUIET=0
+
+usage() {
+    cat <<'EOF'
+Usage: juno-cpu-policy [--quiet] <status|performance|balanced|power|ac|battery|turbo-on|turbo-off>
+
+Modes:
+  performance  Set a performance governor/EPP and allow turbo
+  balanced     Prefer a balanced governor/EPP and allow turbo
+  power        Prefer a power-saving governor/EPP and allow turbo
+  ac           Alias for balanced
+  battery      Alias for power
+  turbo-on     Enable turbo without changing governor or EPP
+  turbo-off    Disable turbo without changing governor or EPP
+  status       Print the current driver, governor, EPP, and turbo state
+EOF
+}
+
+log() {
+    if [ "$QUIET" -eq 0 ]; then
+        printf '%s\n' "$*"
+    fi
+}
+
+first_line() {
+    local file="$1"
+    [ -r "$file" ] && head -n 1 "$file"
+}
+
+has_word() {
+    local needle="$1"
+    local file="$2"
+
+    [ -r "$file" ] || return 1
+    tr ' ' '\n' < "$file" | grep -Fxq "$needle"
+}
+
+write_sysfs() {
+    local value="$1"
+    local file="$2"
+
+    [ -e "$file" ] || return 0
+
+    if [ "$(id -u)" -eq 0 ]; then
+        printf '%s\n' "$value" > "$file"
+    elif command -v sudo >/dev/null 2>&1; then
+        printf '%s\n' "$value" | sudo tee "$file" >/dev/null
+    else
+        printf 'Need root privileges to write %s\n' "$file" >&2
+        exit 1
+    fi
+}
+
+select_first_supported() {
+    local file="$1"
+    shift
+
+    local candidate
+    for candidate in "$@"; do
+        if has_word "$candidate" "$file"; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+driver_name() {
+    first_line "$CPUFREQ_ROOT/policy0/scaling_driver"
+}
+
+current_governor() {
+    first_line "$CPUFREQ_ROOT/policy0/scaling_governor"
+}
+
+current_epp() {
+    first_line "$CPUFREQ_ROOT/policy0/energy_performance_preference"
+}
+
+current_turbo() {
+    if [ -r "$INTEL_NO_TURBO" ]; then
+        if [ "$(first_line "$INTEL_NO_TURBO")" = "0" ]; then
+            printf 'on\n'
+        else
+            printf 'off\n'
+        fi
+    elif [ -r "$ACPI_BOOST" ]; then
+        if [ "$(first_line "$ACPI_BOOST")" = "1" ]; then
+            printf 'on\n'
+        else
+            printf 'off\n'
+        fi
+    else
+        printf 'unknown\n'
+    fi
+}
+
+select_governor() {
+    local driver="$1"
+    local mode="$2"
+    local available="$CPUFREQ_ROOT/policy0/scaling_available_governors"
+
+    case "$driver" in
+        intel_pstate|amd-pstate|amd-pstate-epp)
+            case "$mode" in
+                performance)
+                    select_first_supported "$available" performance powersave
+                    ;;
+                balanced|power)
+                    select_first_supported "$available" powersave performance
+                    ;;
+            esac
+            ;;
+        *)
+            case "$mode" in
+                performance)
+                    select_first_supported "$available" performance schedutil ondemand powersave
+                    ;;
+                balanced)
+                    select_first_supported "$available" ondemand schedutil powersave performance
+                    ;;
+                power)
+                    select_first_supported "$available" powersave schedutil ondemand performance
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+select_epp() {
+    local mode="$1"
+    local available="$CPUFREQ_ROOT/policy0/energy_performance_available_preferences"
+
+    [ -r "$available" ] || return 1
+
+    case "$mode" in
+        performance)
+            select_first_supported "$available" performance balance_performance default
+            ;;
+        balanced)
+            select_first_supported "$available" balance_performance balance_power default performance power
+            ;;
+        power)
+            select_first_supported "$available" power balance_power default balance_performance performance
+            ;;
+    esac
+}
+
+set_governor() {
+    local governor="$1"
+    local file
+
+    for file in "$CPUFREQ_ROOT"/policy*/scaling_governor; do
+        write_sysfs "$governor" "$file"
+    done
+}
+
+set_epp() {
+    local epp="$1"
+    local file
+
+    for file in "$CPUFREQ_ROOT"/policy*/energy_performance_preference; do
+        write_sysfs "$epp" "$file"
+    done
+}
+
+set_turbo() {
+    local enabled="$1"
+
+    if [ -r "$INTEL_NO_TURBO" ]; then
+        if [ "$enabled" = "1" ]; then
+            write_sysfs "0" "$INTEL_NO_TURBO"
+        else
+            write_sysfs "1" "$INTEL_NO_TURBO"
+        fi
+        return 0
+    fi
+
+    if [ -r "$ACPI_BOOST" ]; then
+        write_sysfs "$enabled" "$ACPI_BOOST"
+    fi
+}
+
+print_status() {
+    log "Driver: $(driver_name)"
+    log "Governor: $(current_governor)"
+
+    if [ -r "$CPUFREQ_ROOT/policy0/energy_performance_preference" ]; then
+        log "EPP: $(current_epp)"
+    fi
+
+    log "Turbo: $(current_turbo)"
+}
+
+apply_mode() {
+    local requested="$1"
+    local mode="$requested"
+    local driver governor epp turbo_enabled
+
+    case "$requested" in
+        ac)
+            mode="balanced"
+            ;;
+        battery)
+            mode="power"
+            ;;
+        performance|balanced|power)
+            ;;
+        *)
+            usage >&2
+            exit 2
+            ;;
+    esac
+
+    driver="$(driver_name)"
+    if [ -z "$driver" ]; then
+        printf 'Unable to detect CPU scaling driver\n' >&2
+        exit 1
+    fi
+
+    governor="$(select_governor "$driver" "$mode")"
+    epp=""
+    if epp="$(select_epp "$mode" 2>/dev/null)"; then
+        :
+    else
+        epp=""
+    fi
+
+    turbo_enabled="1"
+
+    set_governor "$governor"
+    if [ -n "$epp" ]; then
+        set_epp "$epp"
+    fi
+    set_turbo "$turbo_enabled"
+
+    log "Applied mode: $mode"
+    print_status
+}
+
+apply_turbo_only() {
+    local enabled="$1"
+
+    set_turbo "$enabled"
+
+    if [ "$enabled" = "1" ]; then
+        log "Turbo enabled"
+    else
+        log "Turbo disabled"
+    fi
+
+    print_status
+}
+
+ACTION=""
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --quiet)
+            QUIET=1
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        status|performance|balanced|power|ac|battery|turbo-on|turbo-off)
+            ACTION="$1"
+            ;;
+        *)
+            usage >&2
+            exit 2
+            ;;
+    esac
+    shift
+done
+
+if [ -z "$ACTION" ]; then
+    usage >&2
+    exit 2
+fi
+
+case "$ACTION" in
+    status)
+        print_status
+        ;;
+    turbo-on)
+        apply_turbo_only "1"
+        ;;
+    turbo-off)
+        apply_turbo_only "0"
+        ;;
+    *)
+        apply_mode "$ACTION"
+        ;;
+esac

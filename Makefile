@@ -16,6 +16,7 @@ install-core:
 	install -Dpm 0644 juno-audio-fix.conf $(DESTDIR)/usr/share/junocomp/juno-audio-fix.conf
 	install -Dpm 0755 restart-audio $(DESTDIR)/usr/share/junocomp/restart-audio
 	install -Dpm 0755 juno-cpufreq.rules $(DESTDIR)/usr/share/nv41/udev/juno-cpufreq.rules
+	install -Dpm 0755 turbo/juno-cpu-policy $(DESTDIR)/usr/bin/juno-cpu-policy
 	install -Dpm 755 turbo/turbo-on $(DESTDIR)/usr/bin/turbo-on
 	install -Dpm 755 turbo/turbo-off $(DESTDIR)/usr/bin/turbo-off
 	install -Dpm 755 turbo/turbo-stat $(DESTDIR)/usr/bin/turbo-stat
@@ -31,6 +32,7 @@ uninstall:
 	rm -R $(DESTDIR)/etc/skel/.config/libreoffice
 	rm -R $(DESTDIR)/usr/share/junocomp/
 	rm -R $(DESTDIR)/usr/share/nv41/
+	rm -f $(DESTDIR)/usr/bin/juno-cpu-policy
 	rm -f $(DESTDIR)/usr/bin/turbo-on
 	rm -f $(DESTDIR)/usr/bin/turbo-off
 	rm -f $(DESTDIR)/usr/bin/turbo-stat

@@ -1,3 +1,21 @@
+juno-drivers (0.5.45+local4) unstable; urgency=low
+
+  * Keep turbo enabled in power and battery policy modes
+  * Separate manual turbo toggles from governor and EPP policy changes
+  * Disable lingering disable-cpu-turbo.service on upgrade
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Fri, 19 Mar 2026 15:50:00 +0000
+
+juno-drivers (0.5.45+local3) unstable; urgency=low
+
+  * Add juno-cpu-policy helper to align governor, EPP, and turbo state
+  * Route turbo-on, turbo-off, and turbo-stat through the shared helper
+  * Use juno-cpu-policy from juno-cpufreq.rules instead of cpupower
+  * Skip enabling juno-cpufreq.rules when power-profiles-daemon is present
+  * Enable juno-cpufreq.rules support for V5xTNC_TND_TNE when PPD is absent
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Fri, 19 Mar 2026 14:55:00 +0000
+
 juno-drivers (0.5.45+local2) unstable; urgency=low
 
   * Add .gitignore entries for Debian build artifacts
