@@ -6,6 +6,5 @@
 
 # ------------------------------------------------------------------------------
 
-SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="/usr/bin/cpupower frequency-set -g powersave"
-SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="/usr/bin/cpupower frequency-set -g ondemand"
-
+SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="/usr/bin/juno-cpu-policy --quiet battery"
+SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="/usr/bin/juno-cpu-policy --quiet ac"
