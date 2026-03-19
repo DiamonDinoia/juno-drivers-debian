@@ -4,16 +4,13 @@ SHELL := /bin/bash
 DESTDIR=debian/juno-drivers
 
 install-core:
-	install -dm755 $(DESTDIR)/lib/systemd/system-sleep/
 	install -dm755 $(DESTDIR)/etc/skel/.config
-	install -dm755 $(DESTDIR)/etc/tlp.d/
 	install -dm755 $(DESTDIR)/etc/skel/.local/share/applications
-	install -dm755 $(DESTDIR)/usr/share/juno-tlp
 	install -dm755 $(DESTDIR)/usr/share/nv41/udev/
 	install -dm755 $(DESTDIR)/usr/share/junocomp
 	install -dm755 $(DESTDIR)/usr/share/glib-2.0/schemas/
 	install -dm755 $(DESTDIR)/etc/pipewire/pipewire-pulse.conf.d/
-	install -dm755 install -dm755 $(DESTDIR)/etc/initramfs-tools/
+	install -dm755 $(DESTDIR)/etc/initramfs-tools/
 	install -dm755 $(DESTDIR)/etc/libinput/
 	install -Dpm 0644 20_juno-ubuntu-settings.gschema.override $(DESTDIR)/usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override
 	install -Dpm 0644 juno-audio-fix.conf $(DESTDIR)/usr/share/junocomp/juno-audio-fix.conf
@@ -33,7 +30,6 @@ install: install-core
 uninstall:
 	rm -R $(DESTDIR)/etc/skel/.config/libreoffice
 	rm -R $(DESTDIR)/usr/share/junocomp/
-	rm -f $(DESTDIR)/lib/systemd/system-sleep/restore-ethernet-connection
 	rm -R $(DESTDIR)/usr/share/nv41/
 	rm -f $(DESTDIR)/usr/bin/turbo-on
 	rm -f $(DESTDIR)/usr/bin/turbo-off

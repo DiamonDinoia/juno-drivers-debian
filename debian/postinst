@@ -1,9 +1,6 @@
 #!/bin/bash
-lsb_dist_id="$(lsb_release -si)"  
 product_model="$(sed -e 's/^\s*//g' -e 's/\s*$//g' "/sys/devices/virtual/dmi/id/product_name" | tr ' ,/-' '_')"
 chassis="$(hostnamectl | awk 'FNR==3 {print $2}')"
-codename="$(lsb_release -c | awk '{print $2}')"
-de="$(ps axf | grep -Po "env \.*[A-Z]+" | awk '{print $2}' | sort -u)"
 
 #--------------------------------------
 
@@ -12,21 +9,12 @@ update-pciids
 #Install Flathub
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-#Add User to Audio
-echo "Adding $USER to Input"
-sed 's/#EXTRA_GROUPS.*/EXTRA_GROUPS="input clevo-keyboard adm"/' -i /etc/adduser.conf
-sed 's/#ADD_EXTRA_GROUPS=1/ADD_EXTRA_GROUPS=1/g' -i /etc/adduser.conf
-
-#GRUB
-#echo "Updating Grub"
-sleep 3
-
 case "$product_model" in
     NUC10i3FNH|NUC10i5FNH|NUC10i7FNH|NUC10i3FNK|NUC10i5FNK|NUC10i7FNK)
     echo "Olympia 8th Gen ($chassis)"
-    if 
+    if
 	grep 'hw:0,0' /etc/pulse/default.pa
-	then 
+	then
 	echo "Olympia (10th Gen) headphone jack drivers already exist";
 	else
 	echo 'load-module module-alsa-sink device=hw:0,0' >> /etc/pulse/default.pa;
@@ -35,29 +23,8 @@ case "$product_model" in
     ;;
 esac
 
-update-initramfs -u -k all
-
 # Enable Systemd
 systemctl enable thermald
-
-# Disable Power Profiles Rules for Desktops
-case "$product_model" in
-    NUC10i3FNH|NUC10i5FNH|NUC10i7FNH|NUC10i3FNK|NUC10i5FNK|NUC10i7FNK|To_Be_Filled_By_O.E.M.|BQM5|TB_4000|SYSTEM_PRODUCT_NAME)
-    if [ -f /etc/udev/rules.d/power-profiles.rules ]; then
-    rm /etc/udev/rules.d/power-profiles.rules;
-    fi
-    ;;
-esac
-
-# Enable Juno PP
-case "$product_model" in
-    NUC10i3FNH|NUC10i5FNH|NUC10i7FNH|NUC10i3FNK|NUC10i5FNK|NUC10i7FNK|To_Be_Filled_By_O.E.M.|BQM5|TB_4000|SYSTEM_PRODUCT_NAME)
-    systemctl disable juno-pp.service
-    ;;
-    *)
-    systemctl enable juno-pp.service
-    ;;
-esac
 
 #Rules for ACPI
 case "$product_model" in
@@ -95,15 +62,6 @@ case "$product_model" in
     fi
     ;;
 esac
-
-#Enable LM92
-if ! grep -Fxq 'lm92' '/etc/modules' ; then
-   echo 'Adding lm92';
-   echo 'lm92' >> /etc/modules;
-   modprobe lm92;
-
-   else echo 'lm92 already enabled';
-fi
 
 # Enable touchpad buttons NJ70AU
 case "$product_model" in

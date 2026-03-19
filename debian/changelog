@@ -1,3 +1,9 @@
+juno-drivers (0.5.45~debian) unstable; urgency=low
+
+  * Cleaned up postinst & Makefile
+
+ -- Juno <usa@junocomputers.com>  Thu, 19 Mar 2026 08:01:52 +0000
+
 juno-drivers (0.5.44~debian) unstable; urgency=low
 
   * Made gaudible, geoclue-position & juno-pp removable dependencies (Suggests)
