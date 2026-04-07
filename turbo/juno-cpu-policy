@@ -14,7 +14,7 @@ usage() {
 Usage: juno-cpu-policy [--quiet] <status|performance|balanced|power|ac|battery|turbo-on|turbo-off>
 
 Modes:
-  performance  Set a performance governor/EPP and allow turbo
+  performance  Set a performance governor and, when supported, performance EPP
   balanced     Prefer a balanced governor/EPP and allow turbo
   power        Prefer a power-saving governor/EPP and allow turbo
   ac           Alias for balanced
@@ -138,10 +138,17 @@ select_governor() {
 }
 
 select_epp() {
-    local mode="$1"
+    local driver="$1"
+    local mode="$2"
     local available="$CPUFREQ_ROOT/policy0/energy_performance_available_preferences"
 
     [ -r "$available" ] || return 1
+
+    # intel_pstate in active mode rejects manual EPP writes once the
+    # performance governor is selected and keeps EPP at "default".
+    if [ "$driver" = "intel_pstate" ] && [ "$mode" = "performance" ]; then
+        return 1
+    fi
 
     case "$mode" in
         performance)
@@ -230,7 +237,7 @@ apply_mode() {
 
     governor="$(select_governor "$driver" "$mode")"
     epp=""
-    if epp="$(select_epp "$mode" 2>/dev/null)"; then
+    if epp="$(select_epp "$driver" "$mode" 2>/dev/null)"; then
         :
     else
         epp=""

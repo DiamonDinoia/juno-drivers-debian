@@ -1,3 +1,17 @@
+juno-drivers (0.5.46+local1) unstable; urgency=low
+
+  * Keep the local dependency policy instead of reintroducing juno-pp/juno-grub
+  * Split local GRUB and CPU policy changes into juno-drivers-local
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Tue, 07 Apr 2026 11:00:00 +0000
+
+juno-drivers (0.5.45+local5) unstable; urgency=low
+
+  * Skip EPP writes for intel_pstate performance mode to avoid EBUSY
+  * Move Juno GRUB cmdline handling into juno-drivers and drop the juno-grub dependency
+
+ -- Marco Barbone <mbarbone@flatironstitute.org>  Fri, 19 Mar 2026 16:05:00 +0000
+
 juno-drivers (0.5.45+local4) unstable; urgency=low
 
   * Keep turbo enabled in power and battery policy modes

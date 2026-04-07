@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+case "$1" in
+	remove|purge|disappear)
+		rm -f /etc/udev/rules.d/juno-cpufreq.rules
+		;;
+esac
+
+if [ "$1" = "purge" ] && command -v update-grub >/dev/null 2>&1; then
+	update-grub
+fi

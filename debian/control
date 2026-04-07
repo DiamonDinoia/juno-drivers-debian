@@ -50,9 +50,21 @@ Depends: juno-info,
 	gstreamer1.0-vaapi,
 	pulseaudio-utils,
 	ffmpegthumbnailer,
-	juno-grub,
-	juno-archive-keyring
-Recommends: gaudible, geoclue-position, juno-wallpaper, steam-devices
+	friendly-recovery,
+	juno-archive-keyring,
+	${misc:Depends}
+Recommends: gaudible, geoclue-position, juno-wallpaper, memtest86+, steam-devices
 Suggests: clevo-keyboard-controller, juno-fan-indicator
 Homepage: https://junocomputers.com
 Description: Debian Drivers for Juno Computers.
+
+Package: juno-drivers-local
+Section: admin
+Priority: optional
+Architecture: amd64
+Depends: juno-drivers (= ${binary:Version}),
+	${misc:Depends}
+Conflicts: juno-grub
+Replaces: juno-grub
+Homepage: https://junocomputers.com
+Description: Local Juno GRUB and CPU policy integration.
