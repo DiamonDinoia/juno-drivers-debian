@@ -2,6 +2,7 @@ juno-drivers (0.5.46+local1) unstable; urgency=low
 
   * Keep the local dependency policy instead of reintroducing juno-pp/juno-grub
   * Split local GRUB and CPU policy changes into juno-drivers-local
+  * Provide juno-grub during the upgrade transition for apt/nala
 
  -- Marco Barbone <mbarbone@flatironinstitute.org>  Tue, 07 Apr 2026 11:00:00 +0000
 
