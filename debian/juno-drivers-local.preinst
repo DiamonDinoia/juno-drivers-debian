@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+rm -f /etc/udev/rules.d/juno-cpufreq.rules
+
+# Legacy Juno GRUB integration now lives in /etc/default/grub.d/11-juno-drivers.cfg.

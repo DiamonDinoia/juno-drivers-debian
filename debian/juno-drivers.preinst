@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+# Remove legacy sleep hooks and the old X11 touchpad drop-in before unpack.
+rm -f /usr/lib/systemd/system-sleep/restart-audio
+rm -f /usr/lib/systemd/system-sleep/99-restart-audio
+rm -f /usr/share/X11/xorg.conf.d/60-nj70au-touchpad.conf
