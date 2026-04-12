@@ -1,3 +1,9 @@
+juno-drivers (0.5.47~debian) unstable; urgency=low
+
+  * Added libhidapi-hidraw0 & libhidapi-libusb0 dependencies
+
+ -- Juno <usa@junocomputers.com>  Sun, 12 Apr 2026 08:01:52 +0000
+
 juno-drivers (0.5.46~debian) unstable; urgency=low
 
   * Reorganized dependencies based on Depends & Recommends
