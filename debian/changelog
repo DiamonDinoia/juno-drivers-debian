@@ -1,3 +1,16 @@
+juno-drivers (0.5.48+local1) unstable; urgency=low
+
+  * Rebased onto upstream 0.5.48~debian (adds GNOME logout button).
+  * Added libhidapi-hidraw0 and libhidapi-libusb0 runtime dependencies (new in
+    upstream 0.5.47).
+  * Retained the split juno-drivers / juno-drivers-local design.
+  * Retained the PPD-aware juno-cpufreq.rules gating (skip the cpufreq udev
+    symlink when power-profiles-daemon is present).
+  * Kept the local dependency policy; juno-pp remains dropped and was not
+    reintroduced by upstream's Depends/Recommends reorganization.
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Tue, 23 Jun 2026 12:00:00 +0000
+
 juno-drivers (0.5.48~debian) unstable; urgency=low
 
   * Added GNOME Logout button
