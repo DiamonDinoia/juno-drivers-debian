@@ -1,3 +1,9 @@
+juno-drivers (0.5.48~debian) unstable; urgency=low
+
+  * Added GNOME Logout button
+
+ -- Juno <usa@junocomputers.com>  Mon, 22 Jun 2026 08:01:52 +0000
+
 juno-drivers (0.5.47~debian) unstable; urgency=low
 
   * Added libhidapi-hidraw0 & libhidapi-libusb0 dependencies
