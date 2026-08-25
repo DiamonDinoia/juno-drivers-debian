@@ -4,8 +4,6 @@ chassis="$(hostnamectl | awk 'FNR==3 {print $2}')"
 
 #--------------------------------------
 
-update-pciids
-
 #Install Flathub
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
@@ -40,10 +38,7 @@ esac
 #FIX AUDIO
 case "$product_model" in
     PE60RNE_RND_RNC)
-    if [ -f /etc/modprobe.d/juno-audio-fix.conf ]; then
-       rm /etc/modprobe.d/juno-audio-fix.conf;
-       cp /usr/share/junocomp/juno-audio-fix.conf /etc/modprobe.d;
-       else
+    if [ ! -f /etc/modprobe.d/juno-audio-fix.conf ]; then
        cp /usr/share/junocomp/juno-audio-fix.conf /etc/modprobe.d;
     fi
     ;;
