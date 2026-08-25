@@ -1,7 +1,7 @@
 Source: juno-drivers
 Section: metapackages
 Priority: optional
-Build-Depends: debhelper
+Build-Depends: debhelper-compat (= 13)
 Maintainer: Giovanni Caligaris <usa@junocomputers.com>
 
 Package: juno-drivers
