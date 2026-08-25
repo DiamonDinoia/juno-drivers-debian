@@ -15,6 +15,7 @@ install-core:
 	install -Dpm 0644 20_juno-ubuntu-settings.gschema.override $(DESTDIR)/usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override
 	install -Dpm 0644 juno-audio-fix.conf $(DESTDIR)/usr/share/junocomp/juno-audio-fix.conf
 	install -Dpm 0755 restart-audio $(DESTDIR)/usr/share/junocomp/restart-audio
+	install -Dpm 0755 restore-i2c-hid $(DESTDIR)/usr/share/junocomp/restore-i2c-hid
 	install -Dpm 0755 juno-cpufreq.rules $(DESTDIR)/usr/share/nv41/udev/juno-cpufreq.rules
 	install -Dpm 755 turbo/turbo-on $(DESTDIR)/usr/bin/turbo-on
 	install -Dpm 755 turbo/turbo-off $(DESTDIR)/usr/bin/turbo-off
