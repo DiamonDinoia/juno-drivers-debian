@@ -1,8 +1,9 @@
 juno-drivers (0.5.48.2+diamon2) unstable; urgency=low
 
-  * Depend on the Clevo keyboard and fan packages: hardware support a Juno
-    machine must not lose to autoremove, which a Suggests/Demotes relationship
-    does not protect.
+  * Recommend the Clevo keyboard and fan packages. Recommends is what protects
+    a package from autoremove (Suggests does not), and Depends is wrong here:
+    clevo-keyboard's postinst writes to sysfs, which a read-only-/sys
+    container must not be asked to survive.
 
  -- Marco Barbone <mbarbone@flatironinstitute.org>  Sun, 30 Aug 2026 19:10:00 -0400
 
