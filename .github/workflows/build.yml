@@ -1,0 +1,48 @@
+name: build
+
+# Builds the two debs this fork changes, installs them in a clean debian:sid
+# container (test-install.sh does both), and attaches them to the `builds`
+# release. The apt repository at DiamonDinoia/apt republishes exactly these
+# bytes, verified against the digest GitHub reports for each asset, so the
+# served package always matches what this CI tested.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: debs
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install packaging tools
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev debhelper
+
+      # Builds with dpkg-buildpackage and checks the result by installing it
+      # where a user would. A postinst that fails in a container would fail the
+      # same way on a live system, so this test is what the apt repository's
+      # own CI relies on for these two packages.
+      - name: Build and install-test the packages
+        run: ./test-install.sh
+
+      - name: Publish the debs as release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          v=$(dpkg-parsechangelog -SVersion)
+          gh release view builds >/dev/null 2>&1 ||
+            gh release create builds --notes "Built debs. Do not delete."
+          for deb in ../juno-drivers_"$v"_amd64.deb ../juno-drivers-local_"$v"_amd64.deb; do
+            [ -f "$deb" ] || { echo "expected $deb"; exit 1; }
+            gh release upload builds "$deb" --clobber
+          done
