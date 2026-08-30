@@ -3,15 +3,16 @@
 # version at the top of debian/changelog, not a tag or a release.
 #
 # The two sides spell the same upstream release differently: upstream ships
-# 0.5.48~debian and this fork rebuilds it as 0.5.48+local1. Comparing those
-# directly says the fork is ahead, which is true and useless. Both are reduced
-# to the upstream release they carry before they are compared.
+# 0.5.48~debian and this fork rebuilds it as 0.5.48+diamon1 (as +local1 before
+# the rename, which base() still strips since old installs carry it). Comparing
+# those directly says the fork is ahead, which is true and useless. Both are
+# reduced to the upstream release they carry before they are compared.
 set -euo pipefail
 
 UPSTREAM=https://gitlab.com/junocomp/juno-drivers-debian/-/raw/main/debian/changelog
 
 version() { sed -n '1s/^[^(]*(\([^)]*\)).*/\1/p' "$1"; }
-base()    { sed -E 's/(~debian|\+local[0-9]+)$//' <<<"$1"; }
+base()    { sed -E 's/(~debian|\+local[0-9]+|\+diamon[0-9]+)$//' <<<"$1"; }
 
 selftest() {
     local fail=0
@@ -32,6 +33,8 @@ selftest() {
 0.6.0~debian     0.5.48+local1    yes
 0.5.48~debian    0.5.49+local1    no
 0.5.48~debian    0.5.9+local1     yes
+0.5.48~debian    0.5.48.1+diamon1 no
+0.5.49~debian    0.5.48.1+diamon1 yes
 CASES
     # The fifth case is the one that matters: a raw dpkg comparison calls
     # 0.5.48~debian older than 0.5.48+local1 for the right reason and newer

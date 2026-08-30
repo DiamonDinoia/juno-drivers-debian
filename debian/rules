@@ -7,4 +7,4 @@
 
 override_dh_auto_install:
 	$(MAKE) install-base DESTDIR=$(CURDIR)/debian/juno-drivers
-	$(MAKE) install-local DESTDIR=$(CURDIR)/debian/juno-drivers-local
+	$(MAKE) install-local DESTDIR=$(CURDIR)/debian/juno-drivers-diamon

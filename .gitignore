@@ -6,6 +6,6 @@ debian/juno-drivers.substvars
 debian/juno-drivers.debhelper.log
 .verify/
 .codex
-debian/juno-drivers-local/
-debian/juno-drivers-local.substvars
-debian/juno-drivers-local.debhelper.log
+debian/juno-drivers-diamon/
+debian/juno-drivers-diamon.substvars
+debian/juno-drivers-diamon.debhelper.log

@@ -1,3 +1,12 @@
+juno-drivers (0.5.48.1+diamon1) unstable; urgency=low
+
+  * Renamed the local suffix from +localN to +diamonN and the package
+    juno-drivers-local to juno-drivers-diamon, carrying Conflicts/Replaces/
+    Provides on the old name so apt swaps it out. The upstream part gained .1
+    because +diamon1 would otherwise sort below the installed +local1.
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Sun, 30 Aug 2026 14:42:56 -0400
+
 juno-drivers (0.5.48+local1) unstable; urgency=low
 
   * Rebased onto upstream 0.5.48~debian (adds GNOME logout button).

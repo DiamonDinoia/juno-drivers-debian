@@ -21,7 +21,7 @@ juno_key_sha=06347ea57cf8ce6c96cf673f32a34cd6a520c0a0b5aef5db393702072f598901
 
 if [ $# -eq 0 ]; then
   (cd "$root" && dpkg-buildpackage -b -uc -us >/dev/null)
-  debs=(juno-drivers juno-drivers-local)
+  debs=(juno-drivers juno-drivers-diamon)
 else
   debs=("$@")
 fi
