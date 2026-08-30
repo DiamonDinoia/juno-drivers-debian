@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Drop the suspend hooks and X11 drop-ins the old layouts shipped, plus the
+# udev rule that the postinst recreates conditioned on power-profiles-daemon.
+rm -f /usr/lib/systemd/system-sleep/restart-audio
+rm -f /usr/lib/systemd/system-sleep/99-restart-audio
+rm -f /usr/share/X11/xorg.conf.d/60-nj70au-touchpad.conf
 rm -f /etc/udev/rules.d/juno-cpufreq.rules
-
-# Legacy Juno GRUB integration now lives in /etc/default/grub.d/11-juno-drivers.cfg.

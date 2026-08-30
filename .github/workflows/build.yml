@@ -45,8 +45,8 @@ jobs:
           v=$(dpkg-parsechangelog -SVersion)
           gh release view builds >/dev/null 2>&1 ||
             gh release create builds --notes "Built debs. Do not delete."
-          for deb in ../juno-drivers_"$v"_amd64.deb ../juno-drivers-diamon_"$v"_amd64.deb; do
-            [ -f "$deb" ] || { echo "expected $deb"; exit 1; }
+          for deb in ../*.deb; do
+            [ -f "$deb" ] || { echo "no debs built"; exit 1; }
             gh release upload builds "$deb" --clobber
             # The apt repository afterwards pins and serves whatever the
             # upload left, so the upload has to equal the file the container

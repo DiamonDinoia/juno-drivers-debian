@@ -1,3 +1,12 @@
+juno-drivers (0.5.48.2+diamon1) unstable; urgency=low
+
+  * Merged the split into one package: juno-drivers-diamon now carries the
+    whole driver payload plus the local GRUB cmdline and CPU policy. It
+    Provides/Conflicts/Replaces juno-drivers, juno-drivers-local and juno-grub,
+    so apt swaps every earlier layout.
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Sun, 30 Aug 2026 18:01:44 -0400
+
 juno-drivers (0.5.48.1+diamon1) unstable; urgency=low
 
   * Renamed the local suffix from +localN to +diamonN and the package
