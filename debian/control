@@ -53,6 +53,9 @@ Depends: juno-info,
 	pulseaudio-utils,
 	ffmpegthumbnailer,
 	friendly-recovery,
+	clevo-keyboard,
+	clevo-keyboard-controller,
+	clevofan-dkms,
 	${misc:Depends}
 Provides: juno-drivers, juno-drivers-local, juno-grub
 Conflicts: juno-drivers, juno-drivers-local, juno-grub

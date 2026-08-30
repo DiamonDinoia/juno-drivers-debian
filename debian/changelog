@@ -1,3 +1,11 @@
+juno-drivers (0.5.48.2+diamon2) unstable; urgency=low
+
+  * Depend on the Clevo keyboard and fan packages: hardware support a Juno
+    machine must not lose to autoremove, which a Suggests/Demotes relationship
+    does not protect.
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Sun, 30 Aug 2026 19:10:00 -0400
+
 juno-drivers (0.5.48.2+diamon1) unstable; urgency=low
 
   * Merged the split into one package: juno-drivers-diamon now carries the
