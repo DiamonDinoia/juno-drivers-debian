@@ -1,0 +1,86 @@
+name: upstream
+
+# Juno publishes no tags and no releases: upstream marks a release with a
+# commit titled "New Release vX.Y.Z~debian" and a debian/changelog entry, so
+# the changelog is what this watches. The mail comes from the issue: GitHub
+# always notifies an assignee, whatever the repository's watch setting is.
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+    inputs:
+      selftest:
+        description: Create then delete a dummy issue, proving the mail path
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+# The default shell is `bash -e`, which reports a pipeline's last exit status,
+# so a curl that fails inside `./upstream-check.sh | tee` would pass the step
+# and the watch would go quiet without saying so. `shell: bash` is `-eo pipefail`.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # Before trusting the answer, prove the comparison still works. The two
+      # sides spell the same release differently, ~debian against +local1, and
+      # a plain dpkg comparison of those gets it backwards.
+      - name: Self-test the version comparison
+        run: ./upstream-check.sh --selftest
+
+      - name: Compare upstream's changelog with ours
+        id: v
+        run: ./upstream-check.sh | tee -a "$GITHUB_OUTPUT"
+
+      - name: Open an issue, which is what sends the mail
+        if: steps.v.outputs.newer == 'yes' || inputs.selftest == true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UP: ${{ steps.v.outputs.upstream }}
+          MINE: ${{ steps.v.outputs.mine }}
+          SELFTEST: ${{ inputs.selftest }}
+        run: |
+          set -euo pipefail
+
+          # A passing scheduled run proves only the compare branch; the create
+          # branch is the one that mails, and it breaks silently otherwise.
+          # Exercise it once, then remove the evidence.
+          if [ "$SELFTEST" = true ]; then
+            url=$(gh issue create --title "upstream workflow selftest" \
+              --assignee "${{ github.repository_owner }}" \
+              --body "A real upstream release opens an issue like this one. The workflow deletes it; nothing to do.")
+            gh issue view "$url" --json assignees --jq '.assignees[0].login' |
+              grep -qx "${{ github.repository_owner }}"
+            gh issue delete "$url" --yes
+            echo "selftest issue created, assigned and deleted"
+            exit 0
+          fi
+
+          title="upstream juno-drivers $UP"
+          seen=$(gh issue list --state all --limit 100 --json title --jq '.[].title')
+          if grep -Fxq "$title" <<<"$seen"; then
+            echo "already reported, nothing to send"
+            exit 0
+          fi
+          gh issue create --title "$title" --assignee "${{ github.repository_owner }}" \
+            --body "Upstream is at \`$UP\`. This fork's \`debian/changelog\` says \`$MINE\`.
+
+          To take it:
+
+              git fetch upstream
+              git rebase upstream/main
+              dch -v ${UP%~debian}+local1 'rebase onto upstream $UP'
+
+          Upstream commits: https://gitlab.com/junocomp/juno-drivers-debian/-/commits/main
+
+          Opened by the \`upstream\` workflow, which reads upstream's changelog daily."
