@@ -8,6 +8,12 @@ juno-drivers (0.5.48+local1) unstable; urgency=low
     symlink when power-profiles-daemon is present).
   * Kept the local dependency policy; juno-pp remains dropped and was not
     reintroduced by upstream's Depends/Recommends reorganization.
+  * Dropped the juno-archive-keyring Depends: diamondinoia-repo-juno carries
+    the same source and key, hash-pinned.
+  * Dropped the Recommends (gaudible, geoclue-position, juno-wallpaper,
+    memtest86+, steam-devices). juno-info stays.
+  * postinst runs systemctl offline and guards glib-compile-schemas, so the
+    package also configures in a container, which is where CI tests it.
 
  -- Marco Barbone <mbarbone@flatironinstitute.org>  Tue, 23 Jun 2026 12:00:00 +0000
 
