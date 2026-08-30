@@ -54,15 +54,15 @@ jobs:
 
           # A passing scheduled run proves only the compare branch; the create
           # branch is the one that mails, and it breaks silently otherwise.
-          # Exercise it once, then remove the evidence.
+          # Exercise it once, then close the evidence.
           if [ "$SELFTEST" = true ]; then
             url=$(gh issue create --title "upstream workflow selftest" \
               --assignee "${{ github.repository_owner }}" \
-              --body "A real upstream release opens an issue like this one. The workflow deletes it; nothing to do.")
+              --body "A real upstream release opens an issue like this one. The workflow closes it right away; nothing to do.")
             gh issue view "$url" --json assignees --jq '.assignees[0].login' |
               grep -qx "${{ github.repository_owner }}"
-            gh issue delete "$url" --yes
-            echo "selftest issue created, assigned and deleted"
+            gh issue close "$url"
+            echo "selftest issue created, assigned and closed"
             exit 0
           fi
 
