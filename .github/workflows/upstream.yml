@@ -16,7 +16,7 @@ on:
         default: false
 
 permissions:
-  contents: read
+  contents: write   # the keepalive below pushes an empty commit
   issues: write
 
 # The default shell is `bash -e`, which reports a pipeline's last exit status,
@@ -75,12 +75,29 @@ jobs:
           gh issue create --title "$title" --assignee "${{ github.repository_owner }}" \
             --body "Upstream is at \`$UP\`. This fork's \`debian/changelog\` says \`$MINE\`.
 
-          To take it:
+          To take it (dch lives in devscripts):
 
               git fetch upstream
               git rebase upstream/main
-              dch -v ${UP%~debian}+local1 'rebase onto upstream $UP'
+              dch -v ${UP%~debian}+diamon1 'rebase onto upstream $UP'
 
           Upstream commits: https://gitlab.com/junocomp/juno-drivers-debian/-/commits/main
 
           Opened by the \`upstream\` workflow, which reads upstream's changelog daily."
+
+      # GitHub disables a scheduled workflow after 60 days of repository
+      # inactivity, and this repository's only activity is a human pushing a
+      # rebase — which is what the watch exists to announce. Upstream's own
+      # history has 70- and 181-day release gaps, so the watch would reliably
+      # be off precisely when a release lands. An empty commit each time the
+      # newest commit nears the limit keeps the schedule alive; the gap means
+      # this costs nothing most of the year.
+      - name: Keep the schedule alive
+        if: github.event_name == 'schedule'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          age=$(( $(date +%s) - $(git log -1 --format=%ct) ))
+          (( age > 45 * 86400 )) || { echo "last commit is $(( age / 86400 )) days old, nothing to do"; exit 0; }
+          git commit --allow-empty -m "ci: keepalive, so a 60-day-quiet schedule stays on"
+          git push

@@ -20,6 +20,9 @@ concurrency:
 
 jobs:
   build:
+    # The upstream watcher's keepalive lands as an empty commit on main; it
+    # changes nothing worth rebuilding.
+    if: "github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'ci: keepalive')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -42,7 +45,15 @@ jobs:
           v=$(dpkg-parsechangelog -SVersion)
           gh release view builds >/dev/null 2>&1 ||
             gh release create builds --notes "Built debs. Do not delete."
-          for deb in ../juno-drivers_"$v"_amd64.deb ../juno-drivers-local_"$v"_amd64.deb; do
+          for deb in ../juno-drivers_"$v"_amd64.deb ../juno-drivers-diamon_"$v"_amd64.deb; do
             [ -f "$deb" ] || { echo "expected $deb"; exit 1; }
             gh release upload builds "$deb" --clobber
+            # The apt repository afterwards pins and serves whatever the
+            # upload left, so the upload has to equal the file the container
+            # test just installed. Without this check a mangled upload is
+            # green here and hash-fails downstream, a day later.
+            remote=$(gh release view builds --json assets \
+              --jq ".assets[] | select(.name == \"$(basename "$deb")\") | .digest")
+            [ "$remote" = "sha256:$(sha256sum "$deb" | cut -d' ' -f1)" ] ||
+              { echo "FAIL  uploaded $(basename "$deb") hashes $remote, not the local bytes"; exit 1; }
           done
