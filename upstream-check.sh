@@ -10,8 +10,12 @@
 set -euo pipefail
 
 UPSTREAM=https://gitlab.com/junocomp/juno-drivers-debian/-/raw/main/debian/changelog
+GRUB_UPSTREAM=https://gitlab.com/junocomp/juno-grub/-/raw/main/debian/changelog
 
 version() { sed -n '1s/^[^(]*(\([^)]*\)).*/\1/p' "$1"; }
+# Blind spot: the fork's 0.5.48.1/.2 reduce to more than upstream's 0.5.48,
+# so an upstream 0.5.48.x point release would go unreported. Upstream has
+# never shipped a fourth version component.
 base()    { sed -E 's/(~debian|\+local[0-9]+|\+diamon[0-9]+)$//' <<<"$1"; }
 
 selftest() {
@@ -35,6 +39,8 @@ selftest() {
 0.5.48~debian    0.5.9+local1     yes
 0.5.48~debian    0.5.48.1+diamon1 no
 0.5.49~debian    0.5.48.1+diamon1 yes
+0.1.24           0.1.24           no
+0.1.25           0.1.24           yes
 CASES
     # The fifth case is the one that matters: a raw dpkg comparison calls
     # 0.5.48~debian older than 0.5.48+local1 for the right reason and newer
@@ -54,4 +60,18 @@ if dpkg --compare-versions "$(base "$up")" gt "$(base "$mine")"; then
     echo "newer=yes"
 else
     echo "newer=no"
+fi
+
+# juno-grub-cmdline is vendored from the separate juno-grub repo; the header
+# of the vendored copy names the version it was synced from.
+grub_mine=$(sed -n 's/^# Vendored from upstream juno-grub \([0-9.]*\).*/\1/p' juno-grub-cmdline)
+grub_up=$(curl -fsSL "$GRUB_UPSTREAM" | version /dev/stdin)
+[ -n "$grub_up" ] && [ -n "$grub_mine" ] ||
+    { echo "could not read a juno-grub version" >&2; exit 1; }
+
+printf 'grub_upstream=%s\ngrub_mine=%s\n' "$grub_up" "$grub_mine"
+if dpkg --compare-versions "$grub_up" gt "$grub_mine"; then
+    echo "grub_newer=yes"
+else
+    echo "grub_newer=no"
 fi

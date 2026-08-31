@@ -1,4 +1,6 @@
 #!/bin/bash
+# Vendored from upstream juno-grub 0.1.24 (gitlab.com/junocomp/juno-grub),
+# reformatted; upstream-check.sh watches that repo's changelog for drift.
 
 product_model="$(sed -e 's/^\s*//g' -e 's/\s*$//g' "/sys/devices/virtual/dmi/id/product_name" | tr ' ,/-' '_')"
 tablet="$(awk '{print substr($0,0,3);}' /sys/class/dmi/id/bios_version)"
@@ -24,7 +26,7 @@ case "$product_model" in
     NP50D5|NP5x_NP7xHH_HJ_HK|NP5x_NP6x_NP7xHP|NP5x_NP6x_NP7xPNP|PD5x_7xPNP_PNR_PNN_PNT|PD5x_7xPNP_PNN_PNT|NH5xVR|PE60RNE_RND_RNC|NP5x_NP6x_NP7xRNJ_RNH|NP5x_NP6x_NP7xRNA_RNB)
     echo "i8042.reset i8042.nomux i8042.nopnp i8042.noloop modprobe.blacklist=psmouse"
     ;;
-    NV4XMZ|NV4XMB_ME_MZ|NV4XMJ_MK_MH|NV4xPZ|NS50MU|NS50_70MU|NL40LU|NL41LU|NL4xLU|NL4x_NL5xLU|NL50NU|NL51NU|NL5xNU|NL4x_NL5xNU|NL4x_NLxNU|NJ5x_NJ7xLU|NJ5x_NJ7xCU|NJ50_70CU|PCX0DX|PCx0Dx|PC5x_7xHP_HR_HS|NP50DE_DB|NH5x_7xDPx|NLx0MU|NJx0MU|NS5x_NS7xPU|NS5x_NS7xAU|NLxxPUx|NJx0PU|X370SNx|NP5x_60_7x_RNx1|V5xTNC_TND_TNE|V35x_6xSNC_SND_SNE|NJx0AU|X58xWNx|V25_26_27xRNP_N_M|X4HP4NAL)
+    NV4XMZ|NV4XMB_ME_MZ|NV4XMJ_MK_MH|NV4xPZ|NS50MU|NS50_70MU|NL40LU|NL41LU|NL4xLU|NL4x_NL5xLU|NL50NU|NL51NU|NL5xNU|NL4x_NL5xNU|NL4x_NLxNU|NJ5x_NJ7xLU|NJ5x_NJ7xCU|NJ50_70CU|PCX0DX|PCx0Dx|PC5x_7xHP_HR_HS|NP50DE_DB|NH5x_7xDPx|NLx0MU|NJx0MU|NS5x_NS7xPU|NS5x_NS7xAU|NLxxPUx|NJx0PU|X370SNx|NP5x_60_7x_RNx1|V5xTNC_TND_TNE|V35x_6xSNC_SND_SNE|NJx0AU|X58xWNx|V25_26_27xRNP_N_M)
     echo "i8042.reset i8042.nomux i8042.nopnp i8042.noloop"
     ;;
     V54x_6x_TU)
@@ -32,6 +34,9 @@ case "$product_model" in
     ;;
     V5x0EU|V5xxKU)
     echo "amdgpu.dcdebugmask=0x10"
+    ;;
+    X4HP4NAL)
+    echo "i8042.reset i8042.nomux i8042.nopnp i8042.noloop atkbd.reset"
     ;;
 esac
 
@@ -50,5 +55,8 @@ esac
 case "$product_model" in
     junotab3|S1105ANR100)
     echo "button.lid_init_state=open i915.enable_fbc=1 i915.enable_psr=1"
+    ;;
+    S13|junotab4-wifi|junotab4_wifi)
+    echo "video=eDP-1:panel_orientation=left_side_up"
     ;;
 esac

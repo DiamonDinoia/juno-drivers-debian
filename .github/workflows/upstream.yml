@@ -43,11 +43,15 @@ jobs:
         run: ./upstream-check.sh | tee -a "$GITHUB_OUTPUT"
 
       - name: Open an issue, which is what sends the mail
-        if: steps.v.outputs.newer == 'yes' || inputs.selftest == true
+        if: steps.v.outputs.newer == 'yes' || steps.v.outputs.grub_newer == 'yes' || inputs.selftest == true
         env:
           GH_TOKEN: ${{ github.token }}
           UP: ${{ steps.v.outputs.upstream }}
           MINE: ${{ steps.v.outputs.mine }}
+          NEWER: ${{ steps.v.outputs.newer }}
+          GRUB_UP: ${{ steps.v.outputs.grub_upstream }}
+          GRUB_MINE: ${{ steps.v.outputs.grub_mine }}
+          GRUB_NEWER: ${{ steps.v.outputs.grub_newer }}
           SELFTEST: ${{ inputs.selftest }}
         run: |
           set -euo pipefail
@@ -66,14 +70,15 @@ jobs:
             exit 0
           fi
 
-          title="upstream juno-drivers $UP"
           seen=$(gh issue list --state all --limit 100 --json title --jq '.[].title')
-          if grep -Fxq "$title" <<<"$seen"; then
-            echo "already reported, nothing to send"
-            exit 0
-          fi
-          gh issue create --title "$title" --assignee "${{ github.repository_owner }}" \
-            --body "Upstream is at \`$UP\`. This fork's \`debian/changelog\` says \`$MINE\`.
+
+          if [ "$NEWER" = yes ]; then
+            title="upstream juno-drivers $UP"
+            if grep -Fxq "$title" <<<"$seen"; then
+              echo "already reported, nothing to send"
+            else
+              gh issue create --title "$title" --assignee "${{ github.repository_owner }}" \
+                --body "Upstream is at \`$UP\`. This fork's \`debian/changelog\` says \`$MINE\`.
 
           To take it (dch lives in devscripts):
 
@@ -84,6 +89,25 @@ jobs:
           Upstream commits: https://gitlab.com/junocomp/juno-drivers-debian/-/commits/main
 
           Opened by the \`upstream\` workflow, which reads upstream's changelog daily."
+            fi
+          fi
+
+          if [ "$GRUB_NEWER" = yes ]; then
+            title="upstream juno-grub $GRUB_UP"
+            if grep -Fxq "$title" <<<"$seen"; then
+              echo "already reported, nothing to send"
+            else
+              gh issue create --title "$title" --assignee "${{ github.repository_owner }}" \
+                --body "juno-grub upstream is at \`$GRUB_UP\`; the vendored \`juno-grub-cmdline\` was synced from \`$GRUB_MINE\`.
+
+          To resync: diff \`juno-grub-cmdline\` against
+          https://gitlab.com/junocomp/juno-grub/-/raw/main/juno-grub/juno-grub,
+          apply the functional hunks, and bump the version in the vendored
+          header comment.
+
+          Opened by the \`upstream\` workflow, which reads upstream's changelog daily."
+            fi
+          fi
 
       # GitHub disables a scheduled workflow after 60 days of repository
       # inactivity, and this repository's only activity is a human pushing a
