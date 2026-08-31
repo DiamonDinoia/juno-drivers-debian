@@ -27,6 +27,11 @@ else
 fi
 version=$(dpkg-parsechangelog -l "$root/debian/changelog" -SVersion)
 
+# postinst must not touch the network: configure has to work offline.
+if grep -q 'https://' "$root/debian/juno-drivers-diamon.postinst"; then
+  echo "FAIL  postinst references a URL; configure must work offline"; exit 1
+fi
+
 build=$(mktemp -d)
 trap 'rm -rf "$build"' EXIT
 for deb in "${debs[@]}"; do
@@ -38,7 +43,7 @@ done
 "$engine" run --rm -i -v "$build:/build:ro" -e "VERSION=$version" \
     -e "JUNO_KEY_SHA=$juno_key_sha" -e "DEBS=${debs[*]}" \
     debian:sid bash -eo pipefail <<'SCRIPT'
-# flatpak, the microcode packages and friends sit outside main.
+# The microcode packages, rar and friends sit outside main.
 sed -i 's/^Components: main$/Components: main contrib non-free non-free-firmware/' \
     /etc/apt/sources.list.d/debian.sources
 

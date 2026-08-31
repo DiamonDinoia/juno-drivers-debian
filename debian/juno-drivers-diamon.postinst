@@ -4,9 +4,6 @@ set -e
 product_model="$(sed -e 's/^\s*//g' -e 's/\s*$//g' "/sys/devices/virtual/dmi/id/product_name" | tr ' ,/-' '_')"
 chassis="$(hostnamectl 2>/dev/null | awk 'FNR==3 {print $2}')"
 
-# Install Flathub
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
 case "$product_model" in
 	NUC10i3FNH|NUC10i5FNH|NUC10i7FNH|NUC10i3FNK|NUC10i5FNK|NUC10i7FNK)
 		echo "Olympia 8th Gen ($chassis)"
@@ -72,3 +69,4 @@ esac
 if command -v update-grub >/dev/null 2>&1; then
 	update-grub
 fi
+
