@@ -9,3 +9,4 @@ debian/juno-drivers.debhelper.log
 debian/juno-drivers-diamon/
 debian/juno-drivers-diamon.substvars
 debian/juno-drivers-diamon.debhelper.log
+debian/*.debhelper

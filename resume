@@ -1,3 +1,0 @@
-swap="$(cat /proc/swaps | grep /dev | awk '{print $1}')"
-
-RESUME=$swap

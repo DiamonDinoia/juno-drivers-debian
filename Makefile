@@ -14,7 +14,6 @@ install:
 	install -dm755 $(DESTDIR)/usr/share/nv41/udev
 	install -dm755 $(DESTDIR)/usr/share/glib-2.0/schemas/
 	install -dm755 $(DESTDIR)/etc/pipewire/pipewire-pulse.conf.d/
-	install -dm755 $(DESTDIR)/etc/initramfs-tools/
 	install -dm755 $(DESTDIR)/etc/libinput/
 	install -dm755 $(DESTDIR)/etc/default/grub.d
 	install -dm755 $(DESTDIR)/usr/bin
@@ -22,7 +21,6 @@ install:
 	install -Dpm 0644 juno-audio-fix.conf $(DESTDIR)/usr/share/junocomp/juno-audio-fix.conf
 	install -Dpm 0755 restart-audio $(DESTDIR)/usr/share/junocomp/restart-audio
 	install -Dpm 0644 pipewire-pulse.conf $(DESTDIR)/etc/pipewire/pipewire-pulse.conf.d/pipewire-pulse.conf
-	install -Dpm 0644 resume $(DESTDIR)/etc/initramfs-tools/resume
 	install -Dpm 0644 60-nj70au-touchpad.conf $(DESTDIR)/usr/share/junocomp/60-nj70au-touchpad.conf
 	install -Dpm 0644 60-system-clevo.quirks $(DESTDIR)/etc/libinput/60-system-clevo.quirks
 	install -Dpm 0755 restore-i2c-hid $(DESTDIR)/usr/share/junocomp/restore-i2c-hid
@@ -39,5 +37,4 @@ uninstall:
 	rm -R $(DESTDIR)/usr/share/junocomp/
 	rm -f $(DESTDIR)/usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override
 	rm -R $(DESTDIR)/etc/pipewire/pipewire-pulse.conf.d
-	rm -f $(DESTDIR)/etc/initramfs-tools/resume
 	rm -f $(DESTDIR)/etc/libinput/60-system-clevo.quirks

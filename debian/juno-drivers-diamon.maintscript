@@ -1,0 +1,5 @@
+# mkinitramfs never sources /etc/initramfs-tools/resume (initramfs-tools
+# reads conf.d/resume); the file was dead weight and its payload was broken
+# on machines with two swap devices. dh_installdeb wires this into the
+# maintainer scripts via dpkg-maintscript-helper.
+rm_conffile /etc/initramfs-tools/resume 0.5.48.2+diamon3~
