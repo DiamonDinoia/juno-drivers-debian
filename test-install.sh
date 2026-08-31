@@ -97,7 +97,7 @@ dpkg-query -W -f '${Status}\n' juno-drivers >/dev/null 2>&1 || {
 
 # Local paths, not the repository's packages of the same name: the bytes under
 # test are the ones built above.
-apt-get install -y --no-install-recommends /build/*.deb </dev/null </dev/null
+apt-get install -y --no-install-recommends /build/*.deb </dev/null
 
 rc=0
 for old in juno-drivers juno-drivers-local juno-grub; do
@@ -119,8 +119,8 @@ done
 # overwrite it, and must keep sourcing cleanly after `apt remove` deletes
 # /usr/share/junocomp/juno-grub-cmdline while the conffile stays behind.
 # grub-mkconfig sources /etc/default/grub and every grub.d drop-in under
-# set -e; grub_env simulates exactly that. Both negatives are proven: the
-# pre-fix line loses adminparam and, with the helper gone, kills the shell.
+# set -e; grub_env simulates exactly that. The negative control at the end
+# proves the check fires on the pre-fix line in both directions.
 echo 'GRUB_CMDLINE_LINUX="adminparam=1"' > /etc/default/grub
 grub_env() {
   bash -ec 'source /etc/default/grub
@@ -157,6 +157,25 @@ done
 apt-get purge -y juno-drivers-diamon >/dev/null </dev/null
 ! grep -q 'load-module module-alsa-sink device=hw:0,0' /etc/pulse/default.pa ||
   { echo "FAIL  pulse line survived purge"; rc=1; }
+
+# Negative control: the grub check above must fire on the pre-fix line, or it
+# proves nothing. With the helper gone (purged above) the old assignment form
+# has to kill a set -e sourcing shell; with a helper present it has to
+# overwrite the admin value.
+mkdir -p /etc/default/grub.d
+echo 'GRUB_CMDLINE_LINUX="$(/usr/share/junocomp/juno-grub-cmdline)"' \
+  > /etc/default/grub.d/11-juno-drivers.cfg
+if grub_env >/dev/null 2>&1; then
+  echo "FAIL  negative control: pre-fix line sourced cleanly without the helper"; rc=1
+fi
+mkdir -p /usr/share/junocomp
+printf '#!/bin/sh\necho stubparam\n' > /usr/share/junocomp/juno-grub-cmdline
+chmod +x /usr/share/junocomp/juno-grub-cmdline
+cmdline=$(grub_env) || { echo "FAIL  negative control: stubbed sourcing broke"; rc=1; }
+case " $cmdline " in
+  *" adminparam=1 "*)
+    echo "FAIL  negative control: pre-fix line kept the admin value"; rc=1 ;;
+esac
 
 echo "ok    $DEBS at $VERSION, $(ls /build | wc -l) debs"
 exit $rc
