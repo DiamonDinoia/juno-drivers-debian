@@ -4,8 +4,18 @@ set -e
 case "$1" in
 	remove|purge|disappear)
 		rm -f /etc/udev/rules.d/juno-cpufreq.rules
+		# The model-gated copies postinst drops outside the package's file list.
+		rm -f /etc/modprobe.d/juno-audio-fix.conf
+		rm -f /usr/lib/systemd/system-sleep/restore-i2c-hid
+		rm -f /usr/share/X11/xorg.conf.d/60-nj70au-touchpad.conf
 		;;
 esac
+
+if [ "$1" = "purge" ]; then
+	# The NUC10 headphone-jack line postinst appends to pulseaudio's conffile.
+	[ -f /etc/pulse/default.pa ] &&
+		sed -i '/^load-module module-alsa-sink device=hw:0,0$/d' /etc/pulse/default.pa || true
+fi
 
 if [ "$1" = "purge" ] && command -v update-grub >/dev/null 2>&1; then
 	update-grub

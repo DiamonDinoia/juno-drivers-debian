@@ -131,12 +131,31 @@ case " $cmdline " in
   *) echo "FAIL  drop-in overwrote the admin cmdline: '$cmdline'"; rc=1 ;;
 esac
 
+# postrm has to clean the model-gated files postinst drops outside the
+# package's file list, and purge has to delete the pulse line. This
+# container's DMI matches none of the gated models, so fake the droppings.
+mkdir -p /etc/modprobe.d /usr/lib/systemd/system-sleep \
+         /usr/share/X11/xorg.conf.d /etc/pulse
+droppings="/etc/modprobe.d/juno-audio-fix.conf
+/usr/lib/systemd/system-sleep/restore-i2c-hid
+/usr/share/X11/xorg.conf.d/60-nj70au-touchpad.conf"
+echo "$droppings" | xargs touch
+echo 'load-module module-alsa-sink device=hw:0,0' >> /etc/pulse/default.pa
+
 apt-get remove -y juno-drivers-diamon >/dev/null </dev/null
 cmdline=$(grub_env) || { echo "FAIL  grub.d sourcing broke after remove"; rc=1; }
 case " $cmdline " in
   *" adminparam=1 "*) ;;
   *) echo "FAIL  admin cmdline lost after remove: '$cmdline'"; rc=1 ;;
 esac
+for f in $droppings; do
+  [ ! -e "$f" ] || { echo "FAIL  $f survived remove"; rc=1; }
+done
+
+apt-get purge -y juno-drivers-diamon >/dev/null </dev/null
+! grep -q 'load-module module-alsa-sink device=hw:0,0' /etc/pulse/default.pa ||
+  { echo "FAIL  pulse line survived purge"; rc=1; }
+
 echo "ok    $DEBS at $VERSION, $(ls /build | wc -l) debs"
 exit $rc
 SCRIPT
