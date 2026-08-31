@@ -70,7 +70,7 @@ jobs:
             exit 0
           fi
 
-          seen=$(gh issue list --state all --limit 100 --json title --jq '.[].title')
+          seen=$(gh issue list --state all --limit 1000 --json title --jq '.[].title')
 
           if [ "$NEWER" = yes ]; then
             title="upstream juno-drivers $UP"

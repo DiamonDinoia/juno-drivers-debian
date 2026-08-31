@@ -32,6 +32,11 @@ if grep -q 'https://' "$root/debian/juno-drivers-diamon.postinst"; then
   echo "FAIL  postinst references a URL; configure must work offline"; exit 1
 fi
 
+# Every file the Makefile installs, read from the Makefile so the two lists
+# cannot drift apart. An empty parse means the pattern rotted, not a clean bill.
+payload=$(sed -n 's/.*install -Dpm [0-9]* [^ ]* \$(DESTDIR)//p' "$root/Makefile")
+[ -n "$payload" ] || { echo "FAIL  parsed no payload paths from the Makefile"; exit 1; }
+
 build=$(mktemp -d)
 trap 'rm -rf "$build"' EXIT
 for deb in "${debs[@]}"; do
@@ -41,7 +46,7 @@ for deb in "${debs[@]}"; do
 done
 
 "$engine" run --rm -i -v "$build:/build:ro" -e "VERSION=$version" \
-    -e "JUNO_KEY_SHA=$juno_key_sha" -e "DEBS=${debs[*]}" \
+    -e "JUNO_KEY_SHA=$juno_key_sha" -e "DEBS=${debs[*]}" -e "PAYLOAD=$payload" \
     debian:sid bash -eo pipefail <<'SCRIPT'
 # The microcode packages, rar and friends sit outside main.
 sed -i 's/^Components: main$/Components: main contrib non-free non-free-firmware/' \
@@ -107,10 +112,7 @@ for deb in $DEBS; do
   [ "$got" = "$VERSION" ] ||
     { echo "FAIL  $deb installed as $got, changelog says $VERSION"; rc=1; }
 done
-for f in /usr/bin/juno-cpu-policy /usr/bin/turbo-on /usr/bin/turbo-off \
-         /usr/bin/turbo-stat /etc/default/grub.d/11-juno-drivers.cfg \
-         /usr/share/junocomp/juno-grub-cmdline \
-         /usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override; do
+for f in $PAYLOAD; do
   [ -e "$f" ] || { echo "FAIL  $f absent"; rc=1; }
 done
 # The GRUB drop-in must append to the admin's GRUB_CMDLINE_LINUX, never

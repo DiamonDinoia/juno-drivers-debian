@@ -45,7 +45,9 @@ CASES
     # The fifth case is the one that matters: a raw dpkg comparison calls
     # 0.5.48~debian older than 0.5.48+local1 for the right reason and newer
     # than nothing, while the sixth catches a string compare pretending to be
-    # a version compare.
+    # a version compare. The seventh and eighth prove base() strips +diamonN
+    # the same way it strips +localN; the last two are the juno-grub watch,
+    # plain versions with no suffix to strip.
     return $fail
 }
 
