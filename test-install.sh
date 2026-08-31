@@ -108,6 +108,30 @@ for f in /usr/bin/juno-cpu-policy /usr/bin/turbo-on /usr/bin/turbo-off \
          /usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override; do
   [ -e "$f" ] || { echo "FAIL  $f absent"; rc=1; }
 done
+# The GRUB drop-in must append to the admin's GRUB_CMDLINE_LINUX, never
+# overwrite it, and must keep sourcing cleanly after `apt remove` deletes
+# /usr/share/junocomp/juno-grub-cmdline while the conffile stays behind.
+# grub-mkconfig sources /etc/default/grub and every grub.d drop-in under
+# set -e; grub_env simulates exactly that. Both negatives are proven: the
+# pre-fix line loses adminparam and, with the helper gone, kills the shell.
+echo 'GRUB_CMDLINE_LINUX="adminparam=1"' > /etc/default/grub
+grub_env() {
+  bash -ec 'source /etc/default/grub
+            for f in /etc/default/grub.d/*.cfg; do source "$f"; done
+            printf "%s" "$GRUB_CMDLINE_LINUX"'
+}
+cmdline=$(grub_env) || { echo "FAIL  sourcing the grub.d drop-in failed"; rc=1; }
+case " $cmdline " in
+  *" adminparam=1 "*) ;;
+  *) echo "FAIL  drop-in overwrote the admin cmdline: '$cmdline'"; rc=1 ;;
+esac
+
+apt-get remove -y juno-drivers-diamon >/dev/null </dev/null
+cmdline=$(grub_env) || { echo "FAIL  grub.d sourcing broke after remove"; rc=1; }
+case " $cmdline " in
+  *" adminparam=1 "*) ;;
+  *) echo "FAIL  admin cmdline lost after remove: '$cmdline'"; rc=1 ;;
+esac
 echo "ok    $DEBS at $VERSION, $(ls /build | wc -l) debs"
 exit $rc
 SCRIPT

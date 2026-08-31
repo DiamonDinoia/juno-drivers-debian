@@ -1,3 +1,29 @@
+juno-drivers (0.5.48.2+diamon3) unstable; urgency=low
+
+  * The GRUB drop-in appends to GRUB_CMDLINE_LINUX instead of overwriting the
+    admin's value, and stays sourceable after `apt remove` deletes the helper
+    it runs (the conffile used to survive removal and break grub-mkconfig
+    under set -e). test-install.sh carries the control for both directions.
+  * Dropped the flatpak integration: flatpak leaves Depends and postinst no
+    longer adds the flathub remote. The old remote-add fetched from the
+    network, so an offline configure died under set -e; this fork does not
+    want flatpak in the first place.
+  * Dropped /etc/initramfs-tools/resume: mkinitramfs never sources that path.
+    rm_conffile in the maintscript cleans it off upgraded systems.
+  * postrm removes the model-gated files postinst drops (juno-audio-fix.conf,
+    restore-i2c-hid, 60-nj70au-touchpad.conf) and, on purge, the NUC10 line
+    postinst appends to /etc/pulse/default.pa.
+  * Resynced juno-grub-cmdline with upstream juno-grub 0.1.24: X4HP4NAL gains
+    atkbd.reset in its own arm, S13/junotab4 gains the panel-orientation
+    parameter. The upstream watch now also reads juno-grub's changelog.
+  * Deleted dead payload (restart-audio, restore-ethernet-connection,
+    disable-cpu-turbo.service, the empty install/ dir), the empty skel dirs,
+    and the bit-rotted uninstall target. juno-cpufreq.rules installs 0644.
+  * New maintainer: Marco Barbone. Giovanni Caligaris stays credited as
+    XSBC-Original-Maintainer; Homepage points at the fork.
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Mon, 31 Aug 2026 06:38:03 -0400
+
 juno-drivers (0.5.48.2+diamon2) unstable; urgency=low
 
   * Recommend the Clevo keyboard and fan packages. Recommends is what protects
