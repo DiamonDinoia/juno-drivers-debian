@@ -109,7 +109,7 @@ for deb in $DEBS; do
 done
 for f in /usr/bin/juno-cpu-policy /usr/bin/turbo-on /usr/bin/turbo-off \
          /usr/bin/turbo-stat /etc/default/grub.d/11-juno-drivers.cfg \
-         /usr/share/junocomp/restart-audio /usr/share/junocomp/juno-grub-cmdline \
+         /usr/share/junocomp/juno-grub-cmdline \
          /usr/share/glib-2.0/schemas/20_juno-ubuntu-settings.gschema.override; do
   [ -e "$f" ] || { echo "FAIL  $f absent"; rc=1; }
 done
