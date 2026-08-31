@@ -1,5 +1,9 @@
 #!/bin/bash
 # Juno Computers
+#
+# Accepted risk: a manual sysfs write wins instantly, but power-profiles-daemon
+# rewrites EPP/EPB at its next event. The turbo toggles touch only
+# no_turbo/boost, which PPD does not manage, so those stick.
 
 set -euo pipefail
 shopt -s nullglob
