@@ -1,3 +1,19 @@
+juno-drivers (0.5.48.2+diamon4) unstable; urgency=low
+
+  * New binary package clevo-keyboard-dkms: the patched Clevo keyboard
+    driver, bundled at build time from the tuxedo-keyboard checkout pinned at
+    8d62d12 (dkms.conf PACKAGE_VERSION 4.6.2+diamon1), installs dpkg-owned
+    under /usr/src/clevo-keyboard-4.6.2+diamon1 and registers with dkms
+    through dh_dkms snippets only. It Conflicts/Replaces/Provides
+    clevo-keyboard, deposing Juno's package whose postinst cp'd an unowned
+    payload into /usr/src and whose prerm glob-rm'd it on removal. The
+    historical /etc/modprobe.d/clevo_keyboard.conf ships as a conffile of the
+    new package.
+  * juno-drivers-diamon now Recommends clevo-keyboard-dkms in place of
+    clevo-keyboard.
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Sat, 05 Sep 2026 04:54:15 -0400
+
 juno-drivers (0.5.48.2+diamon3) unstable; urgency=low
 
   * The GRUB drop-in appends to GRUB_CMDLINE_LINUX instead of overwriting the
