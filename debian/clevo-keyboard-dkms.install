@@ -1,1 +1,4 @@
 clevo_keyboard.conf etc/modprobe.d
+lib/clevo-keyboard-dkms/ usr/lib
+etc/udev/ etc
+etc/clevo-flexicharger.conf etc

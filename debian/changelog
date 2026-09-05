@@ -1,3 +1,14 @@
+juno-drivers (0.5.48.2+diamon6) unstable; urgency=low
+
+  * clevo-keyboard-dkms: boot/reload restoration of the user flexicharger
+    profile: /etc/clevo-flexicharger.conf (seeded 75/85/Custom) applied by
+    60-clevo-flexicharger-restore.rules via /usr/lib/clevo-keyboard-dkms/
+    flexicharger-restore on BAT0 add/change. Remnant gap closed: the EC
+    reverts to NVRAM on every reload incl. boot, so user thresholds only
+    persisted across manual reloads before this.
+
+ -- DiamonDinoia <marco@localhost>  Sat, 05 Sep 2026 06:40:00 -0400
+
 juno-drivers (0.5.48.2+diamon5) unstable; urgency=low
 
   * clevo-keyboard-dkms payload re-pinned to tuxedo-keyboard c37e4cf

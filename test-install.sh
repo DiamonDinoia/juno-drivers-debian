@@ -217,6 +217,23 @@ if grep -qx 'options clevo-keyboard kbd_backlight_mode=0' /etc/modprobe.d/clevo_
 else
   echo "FAIL  /etc/modprobe.d/clevo_keyboard.conf missing or changed"; rc=1
 fi
+# flexicharger boot/reload restore pieces (boot persistence of user thresholds)
+for f in /usr/lib/clevo-keyboard-dkms/flexicharger-restore \
+         /etc/udev/rules.d/60-clevo-flexicharger-restore.rules \
+         /etc/clevo-flexicharger.conf; do
+  if [ -e "$f" ] && dpkg-query -S "$f" | grep -q clevo-keyboard-dkms; then
+    echo "ok    $f present and dpkg-owned"
+  else
+    echo "FAIL  $f missing or not owned"; rc=1
+  fi
+done
+[ -x /usr/lib/clevo-keyboard-dkms/flexicharger-restore ] ||
+  { echo "FAIL  flexicharger-restore not executable"; rc=1; }
+if sh -n /usr/lib/clevo-keyboard-dkms/flexicharger-restore 2>/dev/null; then
+  echo "ok    flexicharger-restore syntax-clean"
+else
+  echo "FAIL  flexicharger-restore syntax"; rc=1
+fi
 confowner=$(dpkg-query -S /etc/modprobe.d/clevo_keyboard.conf 2>/dev/null | cut -d: -f1 | sort -u || true)
 [ "$confowner" = clevo-keyboard-dkms ] ||
   { echo "FAIL  clevo_keyboard.conf owned by: $confowner"; rc=1; }

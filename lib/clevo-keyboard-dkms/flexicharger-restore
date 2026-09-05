@@ -1,0 +1,17 @@
+#!/bin/sh
+# Re-apply the user's saved flexicharger profile when the clevo battery hook
+# appears (boot or module reload). cc4 threshold writes touch live EC
+# registers only, while the EC restores its NVRAM profile on events; NVRAM is
+# authoritative, this file is the user's override on top of it.
+# Contract: missing attrs (hook not up yet) = exit 0 silently.
+conf=/etc/clevo-flexicharger.conf
+ps=/sys/class/power_supply/BAT0
+[ -r "$conf" ] || exit 0
+[ -w "$ps/charge_control_start_threshold" ] || exit 0
+# shellcheck disable=SC1090
+. "$conf"
+[ -n "${start:-}" ] && echo "$start" > "$ps/charge_control_start_threshold"
+[ -n "${end:-}" ]   && echo "$end"   > "$ps/charge_control_end_threshold"
+[ -n "${type:-}" ]  && echo "$type"  > "$ps/charge_type"
+logger -t flexicharger-restore "applied start=${start:-?} end=${end:-?} type=${type:-?}"
+exit 0
