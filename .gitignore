@@ -9,4 +9,9 @@ debian/juno-drivers.debhelper.log
 debian/juno-drivers-diamon/
 debian/juno-drivers-diamon.substvars
 debian/juno-drivers-diamon.debhelper.log
+debian/clevo-keyboard-dkms/
+debian/clevo-keyboard-dkms.substvars
+debian/clevo-keyboard-dkms.debhelper.log
+debian/clevo-keyboard-dkms.dkms
+debian/clevo-keyboard-dkms.dkms.conf
 debian/*.debhelper
