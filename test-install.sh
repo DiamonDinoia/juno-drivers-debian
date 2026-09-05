@@ -14,6 +14,8 @@
 set -euo pipefail
 
 root=$(cd "$(dirname "$0")" && pwd)
+# dkms payload version tracked by the swap test: pinned in the Makefile, never hardcode
+ckver=$(sed -n 's/^CLEVO_VERSION := //p' "$root/Makefile")
 engine=$(command -v podman || command -v docker) || {
   echo "FAIL  no podman or docker; this check cannot run"; exit 1; }
 
@@ -189,9 +191,9 @@ phantoms=$(find /var/lib/dkms -xtype l -print 2>/dev/null || true)
 [ -z "$phantoms" ] || { echo "FAIL  phantom symlinks in /var/lib/dkms: $phantoms"; rc=1; }
 status=$(dkms status clevo-keyboard 2>/dev/null || true)
 echo "ok    dkms status: ${status:-<empty>}"
-printf '%s\n' "$status" | grep -Fq 'clevo-keyboard/4.6.2+diamon1' ||
-  { echo "FAIL  dkms does not track clevo-keyboard/4.6.2+diamon1"; rc=1; }
-other=$(printf '%s\n' "$status" | grep -Fvc 'clevo-keyboard/4.6.2+diamon1' || true)
+printf '%s\n' "$status" | grep -Fq "clevo-keyboard/$ckver" ||
+  { echo "FAIL  dkms does not track clevo-keyboard/$ckver"; rc=1; }
+other=$(printf '%s\n' "$status" | grep -Fvc "clevo-keyboard/$ckver" || true)
 [ "$other" = 0 ] ||
   { echo "FAIL  dkms tracks clevo-keyboard in states other than ours"; rc=1; }
 # (iv) reconfigure must be idempotent: dkms state byte-identical afterwards.
@@ -294,7 +296,7 @@ esac
 # Purging the new package must leave no /usr/src payload, no dkms
 # registration and no conffile: the full round trip of the bug it fixes.
 apt-get purge -y clevo-keyboard-dkms >/dev/null </dev/null
-[ ! -e /usr/src/clevo-keyboard-4.6.2+diamon1 ] ||
+[ ! -e "/usr/src/clevo-keyboard-$ckver" ] ||
   { echo "FAIL  /usr/src payload survived purge"; rc=1; }
 [ -z "$(dkms status clevo-keyboard 2>/dev/null || true)" ] ||
   { echo "FAIL  dkms still tracks clevo-keyboard after purge"; rc=1; }
