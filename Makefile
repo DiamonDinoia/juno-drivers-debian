@@ -9,8 +9,8 @@ DESTDIR ?= debian/juno-drivers-diamon
 # tuxedo-keyboard checkout, archived at build time, never vendored here. The
 # sha is also named in the matching debian/changelog entry; keep them in sync.
 CLEVO_REPO ?= ../tuxedo-keyboard
-CLEVO_SHA := 8d62d129a65d116f5be4508fc55952f48945e1d1
-CLEVO_VERSION := 4.6.2+diamon1
+CLEVO_SHA := c37e4cf6911412007761c133e3cb0aee8a7a1484
+CLEVO_VERSION := 4.6.2+diamon2
 
 install:
 	install -dm755 $(DESTDIR)/usr/share/junocomp

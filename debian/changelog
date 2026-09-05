@@ -1,3 +1,12 @@
+juno-drivers (0.5.48.2+diamon5) unstable; urgency=low
+
+  * clevo-keyboard-dkms payload re-pinned to tuxedo-keyboard c37e4cf
+    (dkms.conf PACKAGE_VERSION 4.6.2+diamon2): cc4 ECs now receive threshold
+    writes verbatim (75/85 keep working); the legacy-table snap only applies
+    to legacy 0x76 ECs.
+
+ -- DiamonDinoia <marco@localhost>  Sat, 05 Sep 2026 06:10:00 -0400
+
 juno-drivers (0.5.48.2+diamon4) unstable; urgency=low
 
   * New binary package clevo-keyboard-dkms: the patched Clevo keyboard
