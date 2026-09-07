@@ -1,3 +1,19 @@
+juno-drivers (0.5.48.2+diamon8) unstable; urgency=low
+
+  * clevo-keyboard-dkms: removed the flexicharger restore machinery
+    (/etc/clevo-flexicharger.conf, 60-clevo-flexicharger-restore.rules,
+    /usr/lib/clevo-keyboard-dkms/flexicharger-restore). Charge control is
+    KDE-only: the udev rule re-imposed the conf on every BAT0 add|change
+    (10-30 events/s, ~615k helper runs/boot), clobbering KDE Charge Limit
+    writes in under a second and hammering the EC with ~2.4e3 store
+    transactions/min. Analysis: ../tuxedo-keyboard/juno/analysis/
+    2026-09-07-charge/D2-kde-api.md and D4-kde-only-plan.md. Both /etc
+    paths shipped as conffiles since diamon6, so a new
+    clevo-keyboard-dkms.maintscript rm_conffiles them at 0.5.48.2+diamon8~.
+    Payload pin unchanged (c37e4cf / 4.6.2+diamon2).
+
+ -- DiamonDinoia <marco@localhost>  Mon, 07 Sep 2026 18:30:00 -0400
+
 juno-drivers (0.5.48.2+diamon7) unstable; urgency=low
 
   * juno-drivers-diamon: clevo-keyboard-dkms moves from Recommends to

@@ -1,0 +1,9 @@
+# diamon6 shipped the flexicharger restore machinery; diamon8 drops it
+# (KDE-only charge control: the udev rule re-imposed the conf on every BAT0
+# add|change, clobbering KDE Charge Limit writes and hammering the EC).
+# Both /etc paths are dpkg conffiles on machines upgraded from diamon6/7;
+# dh_installdeb wires this into the maintainer scripts via
+# dpkg-maintscript-helper. The /usr/lib helper was a regular file: the
+# package file-list removal already covers it.
+rm_conffile /etc/clevo-flexicharger.conf 0.5.48.2+diamon8~
+rm_conffile /etc/udev/rules.d/60-clevo-flexicharger-restore.rules 0.5.48.2+diamon8~

@@ -2,7 +2,10 @@
 # Installs the debs this fork just built in a clean debian:sid container, the
 # way a Juno machine would. The check is not vacuous: juno-drivers has to come
 # out configured, the files the Makefile installs have to be on disk, and the
-# version has to match debian/changelog.
+# version has to match debian/changelog. It also upgrades onto the previously
+# released debs (diamon7, which ships the flexicharger restore trio) and
+# asserts the trio is gone afterwards — fresh-install absence asserts alone
+# would prove nothing about the conffile cleanup.
 #
 # Juno's own repository is configured only because juno-drivers Depends on
 # juno-info, which Juno alone publishes. The key is pinned by SHA-256, the same
@@ -29,6 +32,16 @@ else
 fi
 version=$(dpkg-parsechangelog -l "$root/debian/changelog" -SVersion)
 
+# The upgrade leg below installs the previous release first and the new debs
+# over it: diamon7 is the newest release that ships the flexicharger restore
+# trio, so its debs must sit next to this build. The version is derived from
+# the second changelog entry and pinned here so a chain bump fails loudly
+# instead of silently weakening the absence asserts.
+oldver=$(dpkg-parsechangelog -l "$root/debian/changelog" -o 1 -c 1 -SVersion)
+[ "$oldver" = "0.5.48.2+diamon7" ] || {
+  echo "FAIL  previous changelog entry is $oldver, expected 0.5.48.2+diamon7 (upgrade-leg pin)"
+  exit 1; }
+
 # postinst must not touch the network: configure has to work offline.
 if grep -q 'https://' "$root/debian/juno-drivers-diamon.postinst"; then
   echo "FAIL  postinst references a URL; configure must work offline"; exit 1
@@ -45,9 +58,14 @@ for deb in "${debs[@]}"; do
   f=$root/../${deb}_${version}_amd64.deb
   [ -f "$f" ] || { echo "FAIL  no built .deb at $f"; exit 1; }
   cp "$f" "$build/"
+  o=$root/../${deb}_${oldver}_amd64.deb
+  [ -f "$o" ] || { echo "FAIL  upgrade leg needs the previous deb at $o"; exit 1; }
+  mkdir -p "$build/old"
+  cp "$o" "$build/old/"
 done
 
 "$engine" run --rm -i -v "$build:/build:ro" -e "VERSION=$version" \
+    -e "OLDVER=$oldver" \
     -e "JUNO_KEY_SHA=$juno_key_sha" -e "DEBS=${debs[*]}" -e "PAYLOAD=$payload" \
     debian:sid bash -eo pipefail <<'SCRIPT'
 # The microcode packages, rar and friends sit outside main.
@@ -144,6 +162,21 @@ fi
 
 # Local paths, not the repository's packages of the same name: the bytes under
 # test are the ones built above.
+echo "upgrade leg: install the previous release ($OLDVER) first"
+apt-get install -y --no-install-recommends /build/old/*.deb </dev/null
+# Positive control: diamon7 ships the flexicharger restore trio, so all three
+# paths must land on disk dpkg-owned, or the absence asserts below prove
+# nothing about the upgrade.
+for f in /usr/lib/clevo-keyboard-dkms/flexicharger-restore \
+         /etc/udev/rules.d/60-clevo-flexicharger-restore.rules \
+         /etc/clevo-flexicharger.conf; do
+  [ -e "$f" ] || { echo "FAIL  positive control: $f not on disk after the $OLDVER install"; exit 1; }
+  dpkg-query -S "$f" 2>/dev/null | grep -q clevo-keyboard-dkms ||
+    { echo "FAIL  positive control: $f not dpkg-owned after the $OLDVER install"; exit 1; }
+done
+echo "ok    flexicharger trio on disk at $OLDVER (upgrade-leg baseline)"
+
+echo "upgrade to $VERSION over the $OLDVER install"
 apt-get install -y --no-install-recommends /build/*.deb </dev/null
 
 rc=0
@@ -217,23 +250,18 @@ if grep -qx 'options clevo-keyboard kbd_backlight_mode=0' /etc/modprobe.d/clevo_
 else
   echo "FAIL  /etc/modprobe.d/clevo_keyboard.conf missing or changed"; rc=1
 fi
-# flexicharger boot/reload restore pieces (boot persistence of user thresholds)
+# The flexicharger restore machinery is gone in diamon8 (KDE-only charge
+# control): the upgrade above crossed the rm_conffile boundary, so both
+# conffiles and the /usr/lib helper must be off disk and disowned.
 for f in /usr/lib/clevo-keyboard-dkms/flexicharger-restore \
          /etc/udev/rules.d/60-clevo-flexicharger-restore.rules \
          /etc/clevo-flexicharger.conf; do
-  if [ -e "$f" ] && dpkg-query -S "$f" | grep -q clevo-keyboard-dkms; then
-    echo "ok    $f present and dpkg-owned"
-  else
-    echo "FAIL  $f missing or not owned"; rc=1
+  [ ! -e "$f" ] || { echo "FAIL  $f on disk after the $VERSION upgrade"; rc=1; }
+  if dpkg-query -S "$f" 2>/dev/null | grep -q clevo-keyboard-dkms; then
+    echo "FAIL  $f still dpkg-owned after the $VERSION upgrade"; rc=1
   fi
 done
-[ -x /usr/lib/clevo-keyboard-dkms/flexicharger-restore ] ||
-  { echo "FAIL  flexicharger-restore not executable"; rc=1; }
-if sh -n /usr/lib/clevo-keyboard-dkms/flexicharger-restore 2>/dev/null; then
-  echo "ok    flexicharger-restore syntax-clean"
-else
-  echo "FAIL  flexicharger-restore syntax"; rc=1
-fi
+echo "ok    flexicharger trio absent and disowned at $VERSION"
 confowner=$(dpkg-query -S /etc/modprobe.d/clevo_keyboard.conf 2>/dev/null | cut -d: -f1 | sort -u || true)
 [ "$confowner" = clevo-keyboard-dkms ] ||
   { echo "FAIL  clevo_keyboard.conf owned by: $confowner"; rc=1; }
@@ -319,6 +347,13 @@ apt-get purge -y clevo-keyboard-dkms >/dev/null </dev/null
   { echo "FAIL  dkms still tracks clevo-keyboard after purge"; rc=1; }
 [ ! -e /etc/modprobe.d/clevo_keyboard.conf ] ||
   { echo "FAIL  clevo_keyboard.conf survived purge"; rc=1; }
+# The removed flexicharger restore trio must not resurface post-purge either:
+# no leftovers, no rm_conffile remnants.
+for f in /usr/lib/clevo-keyboard-dkms/flexicharger-restore \
+         /etc/udev/rules.d/60-clevo-flexicharger-restore.rules \
+         /etc/clevo-flexicharger.conf; do
+  [ ! -e "$f" ] || { echo "FAIL  $f survived purge"; rc=1; }
+done
 
 echo "ok    $DEBS at $VERSION, $(ls /build | wc -l) debs"
 exit $rc
