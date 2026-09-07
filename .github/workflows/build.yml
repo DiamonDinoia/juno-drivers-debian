@@ -28,6 +28,17 @@ jobs:
       - name: Install packaging tools
         run: sudo apt-get update && sudo apt-get install -y build-essential dpkg-dev debhelper dh-dkms
 
+      # Makefile's bundle-source archives $(CLEVO_SHA) out of ../tuxedo-keyboard;
+      # provide exactly that commit from the fork. Depth-1 fetch of the pin
+      # itself, never a branch, so a moved branch can never smuggle in a tree.
+      - name: Fetch the pinned tuxedo-drivers payload
+        run: |
+          sha=$(sed -n 's/^CLEVO_SHA := //p' Makefile)
+          mkdir ../tuxedo-keyboard
+          git -C ../tuxedo-keyboard init -q
+          git -C ../tuxedo-keyboard remote add origin https://github.com/DiamonDinoia/tuxedo-drivers.git
+          git -C ../tuxedo-keyboard fetch -q --depth 1 origin "$sha"
+
       # Builds with dpkg-buildpackage and checks the result by installing it
       # where a user would. A postinst that fails in a container would fail the
       # same way on a live system, so this test is what the apt repository's
