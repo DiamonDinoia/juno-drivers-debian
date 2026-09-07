@@ -1,3 +1,16 @@
+juno-drivers (0.5.48.2+diamon7) unstable; urgency=low
+
+  * juno-drivers-diamon: clevo-keyboard-dkms moves from Recommends to
+    Depends. clevo-keyboard-controller (still a Recommends, pulled from
+    Juno's repo) hard-Depends on clevo-keyboard; with the driver deb merely
+    recommended, apt kept Juno's unpatched clevo-keyboard and dropped the
+    patched one, so a fresh default install lost the cc4/0x46 charging fix
+    and failed outright wherever Juno's dkms postinst cannot build
+    (containers). The hard Depends resolves the controller chain through our
+    Provides/Conflicts/Replaces instead.
+
+ -- DiamonDinoia <marco@localhost>  Mon, 07 Sep 2026 12:20:00 -0400
+
 juno-drivers (0.5.48.2+diamon6) unstable; urgency=low
 
   * clevo-keyboard-dkms: boot/reload restoration of the user flexicharger
