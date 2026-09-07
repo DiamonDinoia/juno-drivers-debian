@@ -1,3 +1,8 @@
 Copyright 2026, Juno Computers Ltd
 Copyright 2026, Juno Computers USA, LLC
 Copyright 2026, Marco Barbone (Debian fork packaging)
+
+The clevo-keyboard-dkms payload is the tuxedo-drivers kernel tree,
+https://github.com/tuxedocomputers/tuxedo-drivers:
+Copyright 2022 TUXEDO Computers GmbH <tux@tuxedocomputers.com>, GPL-3.0+
+(see /usr/share/common-licenses/GPL-3).

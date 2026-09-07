@@ -1,0 +1,5 @@
+# The EC restores its NVRAM flexicharger profile whenever the clevo stack
+# (re)loads; re-apply the user's saved profile from /etc/clevo-flexicharger.conf
+# on top. Fires on both cold-plug (add) and hook re-registration (change).
+ACTION=="add|change", SUBSYSTEM=="power_supply", ENV{POWER_SUPPLY_NAME}=="BAT0", \
+  RUN+="/usr/lib/clevo-keyboard-dkms/flexicharger-restore"

@@ -3,7 +3,13 @@
 # -*- makefile -*-
 
 %:
-	dh $@
+	dh $@ --with dkms
 
 override_dh_auto_install:
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/juno-drivers-diamon
+
+# Stage the private DKMS payload before dh_install, so /usr/src ships dpkg-owned
+# and dh_dkms writes the only registration snippets.
+override_dh_install:
+	$(MAKE) bundle-source DESTDIR=$(CURDIR)/debian/clevo-keyboard-dkms
+	dh_install
