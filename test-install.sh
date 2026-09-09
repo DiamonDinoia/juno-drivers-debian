@@ -36,13 +36,13 @@ version=$(dpkg-parsechangelog -l "$root/debian/changelog" -SVersion)
 
 # The upgrade leg below installs the previous release first and the new debs
 # over it: diamon7 is the newest release that ships the flexicharger restore
-# trio, so its debs must sit next to this build. The version is derived from
-# the second changelog entry and pinned here so a chain bump fails loudly
-# instead of silently weakening the absence asserts.
-oldver=$(dpkg-parsechangelog -l "$root/debian/changelog" -o 1 -c 1 -SVersion)
-[ "$oldver" = "0.5.48.2+diamon7" ] || {
-  echo "FAIL  previous changelog entry is $oldver, expected 0.5.48.2+diamon7 (upgrade-leg pin)"
-  exit 1; }
+# trio (diamon8 already rm_conffiles it), so it is the meaningful positive
+# control for the trio's on-disk presence and must stay the baseline no
+# matter how many releases the changelog has grown since. Hardcoded rather
+# than derived from "the previous entry": that entry is diamon8 now, which
+# would make the positive control below vacuous. If the diamon7 debs ever go
+# missing, the [ -f "$o" ] check further down still fails loudly.
+oldver=0.5.48.2+diamon7
 
 # postinst must not touch the network: configure has to work offline.
 if grep -q 'https://' "$root/debian/juno-drivers-diamon.postinst"; then

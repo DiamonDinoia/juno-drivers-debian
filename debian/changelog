@@ -1,3 +1,23 @@
+juno-drivers (0.5.48.2+diamon9) unstable; urgency=low
+
+  * clevo-keyboard-dkms payload bumped to tuxedo-keyboard 4.6.2+diamon3
+    (61a47d1): charge_type_store and charge_control_start/end_threshold_store
+    now call power_supply_changed() after writing the EC, so upower and KDE
+    re-read the threshold instead of serving a cached value (upower kept
+    showing 80 while sysfs already held 85). Flexicharger EC errors
+    (clevo_has_legacy_flexicharger, clevo_legacy_flexicharger_read,
+    clevo_has_cc4_flexicharger) propagate instead of being masked; cc4
+    read-modify-write access is serialized by a mutex; the WMI pkgbuf path
+    (clevo_wmi_interface_method_call_pkgbuf) returns -EOPNOTSUPP instead of a
+    false success; the ACPI object leak on the 0x46 call at init/resume is
+    fixed.
+  * clevo-keyboard-dkms: postinst reloads udev (when /run/udev/control
+    exists) after the diamon8 rm_conffile removes the flexicharger restore
+    rule, so the running daemon stops executing the removed rule from its
+    cached rules instead of waiting for the next reboot.
+
+ -- DiamonDinoia <marco@localhost>  Wed, 09 Sep 2026 10:05:42 -0400
+
 juno-drivers (0.5.48.2+diamon8) unstable; urgency=low
 
   * clevo-keyboard-dkms: removed the flexicharger restore machinery
