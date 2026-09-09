@@ -43,6 +43,12 @@ version=$(dpkg-parsechangelog -l "$root/debian/changelog" -SVersion)
 # would make the positive control below vacuous. If the diamon7 debs ever go
 # missing, the [ -f "$o" ] check further down still fails loudly.
 oldver=0.5.48.2+diamon7
+# sha256 of the two $oldver debs as GitHub reports them on the "builds"
+# release; fetched below so local and CI runs test the published bytes.
+declare -A oldver_sha=(
+  [clevo-keyboard-dkms]=2b0a87b2b4e7834ee70b2f19fe1d5640dfb3c34b2410218d609e7b9eb25b15d6
+  [juno-drivers-diamon]=a410b1aec6dfc6aee37e1214b33a8e1cba086c6b9391e54e8d77ec0bdc99aa2d
+)
 
 # postinst must not touch the network: configure has to work offline.
 if grep -q 'https://' "$root/debian/juno-drivers-diamon.postinst"; then
@@ -56,14 +62,20 @@ payload=$(sed -n 's/.*install -Dpm [0-9]* [^ ]* \$(DESTDIR)//p' "$root/Makefile"
 
 build=$(mktemp -d)
 trap 'rm -rf "$build"' EXIT
+mkdir -p "$build/old"
 for deb in "${debs[@]}"; do
   f=$root/../${deb}_${version}_amd64.deb
   [ -f "$f" ] || { echo "FAIL  no built .deb at $f"; exit 1; }
   cp "$f" "$build/"
-  o=$root/../${deb}_${oldver}_amd64.deb
-  [ -f "$o" ] || { echo "FAIL  upgrade leg needs the previous deb at $o"; exit 1; }
-  mkdir -p "$build/old"
-  cp "$o" "$build/old/"
+  o="$build/old/${deb}_${oldver}_amd64.deb"
+  sha="${oldver_sha[$deb]}"
+  if [ -f "$o" ] && echo "$sha  $o" | sha256sum -c - >/dev/null 2>&1; then
+    : # cached from a previous run, already verified
+  else
+    curl -fsSL "https://github.com/DiamonDinoia/juno-drivers-debian/releases/download/builds/${deb}_${oldver}_amd64.deb" -o "$o"
+    echo "$sha  $o" | sha256sum -c - >/dev/null ||
+      { echo "FAIL  $o digest mismatch"; exit 1; }
+  fi
 done
 
 "$engine" run --rm -i -v "$build:/build:ro" -e "VERSION=$version" \
