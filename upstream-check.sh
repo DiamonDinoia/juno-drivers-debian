@@ -18,6 +18,12 @@ version() { sed -n '1s/^[^(]*(\([^)]*\)).*/\1/p' "$1"; }
 # never shipped a fourth version component.
 base()    { sed -E 's/(~debian|\+local[0-9]+|\+diamon[0-9]+)$//' <<<"$1"; }
 
+# tuxedo-drivers tags pre-releases inline ("_rc") instead of using GitHub's
+# pre-release flag, and a plain dpkg compare would call "4.23.0_rc" newer
+# than a real "4.22.3". Reads `git ls-remote` lines on stdin, so the same
+# filter runs offline in the selftest and live against the real remote.
+tux_filter() { sed -n 's#.*refs/tags/v##p' | grep -E '^[0-9]+(\.[0-9]+)*$'; }
+
 selftest() {
     local fail=0
     # upstream, fork, expected verdict
@@ -52,6 +58,47 @@ CASES
     # the same way it strips +localN. Then the juno-grub watch pair, plain
     # versions with no suffix to strip, and the clevo-keyboard watch rows,
     # including 4.6.2 sorting below 4.6.2-1 the dpkg way.
+
+    # tux tag filter: an _rc pre-release and a bare vX.Y.Z tag are what the
+    # real remote actually returns; the _rc must not win the max.
+    got=$(printf 'a\trefs/tags/v4.22.3\nb\trefs/tags/v4.23.0_rc\nc\trefs/tags/v4.6.2\n' |
+        tux_filter | sort -V | tail -1)
+    if [ "$got" = 4.22.3 ]; then
+        printf 'ok    tux tag filter drops _rc, picks    -> %s\n' "$got"
+    else
+        printf 'FAIL  tux tag filter -> %s, expected 4.22.3\n' "$got"
+        fail=1
+    fi
+
+    # tux/fan version rows: the two the workflow actually branches on.
+    while read -r up mine want; do
+        got=no
+        dpkg --compare-versions "$up" gt "$mine" && got=yes
+        if [ "$got" = "$want" ]; then
+            printf 'ok    tux %-16s vs %-16s -> %s\n' "$up" "$mine" "$got"
+        else
+            printf 'FAIL  tux %-16s vs %-16s -> %s, expected %s\n' "$up" "$mine" "$got" "$want"
+            fail=1
+        fi
+    done <<'CASES'
+4.23.0           4.6.2            yes
+4.6.2            4.6.2            no
+CASES
+
+    # fan sha compare: no version syntax to launder, so any mismatch counts.
+    while read -r up mine want; do
+        got=no
+        [ "$up" != "$mine" ] && got=yes
+        if [ "$got" = "$want" ]; then
+            printf 'ok    fan %-16s vs %-16s -> %s\n' "$up" "$mine" "$got"
+        else
+            printf 'FAIL  fan %-16s vs %-16s -> %s, expected %s\n' "$up" "$mine" "$got" "$want"
+            fail=1
+        fi
+    done <<'CASES'
+f0691d7          f0691d7          no
+4e2c1a9          f0691d7          yes
+CASES
     return $fail
 }
 
@@ -102,4 +149,44 @@ if dpkg --compare-versions "$kbd_up" gt "$kbd_mine"; then
     echo "kbd_newer=yes"
 else
     echo "kbd_newer=no"
+fi
+
+# tuxedo-drivers is the real upstream of the vendored clevo-keyboard payload
+# (the Makefile's CLEVO_VERSION pin), distinct from juno's own clevo-keyboard
+# fork above. Upstream publishes tags but no GitHub Releases, and no auth is
+# needed to list them.
+TUX_URL=https://github.com/tuxedocomputers/tuxedo-drivers.git
+
+tux_mine=$(base "$(sed -n 's/^CLEVO_VERSION := //p' Makefile)")
+tux_tags=$(git ls-remote --tags --refs "$TUX_URL" | tux_filter)
+[ -n "$tux_tags" ] || { echo "could not read tuxedo-drivers tags" >&2; exit 1; }
+tux_up=
+for v in $tux_tags; do
+    { [ -z "$tux_up" ] || dpkg --compare-versions "$v" gt "$tux_up"; } && tux_up=$v
+done
+
+printf 'tux_upstream=%s\ntux_mine=%s\n' "$tux_up" "$tux_mine"
+if dpkg --compare-versions "$tux_up" gt "$tux_mine"; then
+    echo "tux_newer=yes"
+else
+    echo "tux_newer=no"
+fi
+
+# clevofan is vendored as a separate git checkout, not this repo, so there is
+# no version file here to read. Upstream last cut a GitHub release in 2022 and
+# otherwise just pushes commits to main, so the live HEAD sha is the signal:
+# any new tag needs a commit to sit on, so a sha diff catches both. The pin is
+# the merge-base of the vendored fork's main with upstream/main, recorded by
+# `git merge-base main upstream/main` in that checkout on 2026-09-09.
+FAN_URL=https://github.com/simopil/clevofan.git
+fan_mine_sha=f0691d77c3b86867299399c452e4582fa95bca4e
+
+fan_up_sha=$(git ls-remote "$FAN_URL" HEAD | cut -f1)
+[ -n "$fan_up_sha" ] || { echo "could not read clevofan upstream HEAD" >&2; exit 1; }
+
+printf 'fan_upstream_sha=%s\nfan_mine_sha=%s\n' "$fan_up_sha" "$fan_mine_sha"
+if [ "$fan_up_sha" != "$fan_mine_sha" ]; then
+    echo "fan_newer=yes"
+else
+    echo "fan_newer=no"
 fi

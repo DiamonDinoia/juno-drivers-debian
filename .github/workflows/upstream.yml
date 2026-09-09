@@ -43,7 +43,10 @@ jobs:
         run: ./upstream-check.sh | tee -a "$GITHUB_OUTPUT"
 
       - name: Open an issue, which is what sends the mail
-        if: steps.v.outputs.newer == 'yes' || steps.v.outputs.grub_newer == 'yes' || inputs.selftest == true
+        if: |
+          steps.v.outputs.newer == 'yes' || steps.v.outputs.grub_newer == 'yes' ||
+          steps.v.outputs.kbd_newer == 'yes' || steps.v.outputs.tux_newer == 'yes' ||
+          steps.v.outputs.fan_newer == 'yes' || inputs.selftest == true
         env:
           GH_TOKEN: ${{ github.token }}
           UP: ${{ steps.v.outputs.upstream }}
@@ -52,6 +55,15 @@ jobs:
           GRUB_UP: ${{ steps.v.outputs.grub_upstream }}
           GRUB_MINE: ${{ steps.v.outputs.grub_mine }}
           GRUB_NEWER: ${{ steps.v.outputs.grub_newer }}
+          KBD_UP: ${{ steps.v.outputs.kbd_upstream }}
+          KBD_MINE: ${{ steps.v.outputs.kbd_mine }}
+          KBD_NEWER: ${{ steps.v.outputs.kbd_newer }}
+          TUX_UP: ${{ steps.v.outputs.tux_upstream }}
+          TUX_MINE: ${{ steps.v.outputs.tux_mine }}
+          TUX_NEWER: ${{ steps.v.outputs.tux_newer }}
+          FAN_UP_SHA: ${{ steps.v.outputs.fan_upstream_sha }}
+          FAN_MINE_SHA: ${{ steps.v.outputs.fan_mine_sha }}
+          FAN_NEWER: ${{ steps.v.outputs.fan_newer }}
           SELFTEST: ${{ inputs.selftest }}
         run: |
           set -euo pipefail
@@ -106,6 +118,56 @@ jobs:
           header comment.
 
           Opened by the \`upstream\` workflow, which reads upstream's changelog daily."
+            fi
+          fi
+
+          if [ "$KBD_NEWER" = yes ]; then
+            title="upstream clevo-keyboard $KBD_UP"
+            if grep -Fxq "$title" <<<"$seen"; then
+              echo "already reported, nothing to send"
+            else
+              gh issue create --title "$title" --assignee "${{ github.repository_owner }}" \
+                --body "deb.junocomputers.com's \`clevo-keyboard-dkms\` is now at \`$KBD_UP\`; this fork's baseline is \`$KBD_MINE\`.
+
+          To take it: fetch the new deb from https://deb.junocomputers.com/,
+          diff it against the payload the Makefile vendors under
+          \`CLEVO_VERSION\`, and re-pin if it changed functionally.
+
+          Opened by the \`upstream\` workflow, which reads deb.junocomputers.com's Packages index daily."
+            fi
+          fi
+
+          if [ "$TUX_NEWER" = yes ]; then
+            title="upstream tuxedo-drivers $TUX_UP"
+            if grep -Fxq "$title" <<<"$seen"; then
+              echo "already reported, nothing to send"
+            else
+              gh issue create --title "$title" --assignee "${{ github.repository_owner }}" \
+                --body "tuxedo-drivers upstream is at \`v$TUX_UP\`; this fork stays pinned at \`$TUX_MINE\` and cherry-picks.
+
+          Rebasing onto 4.23.0 was tried on 2026-09-08 and rejected: the
+          Notebook-branded (non-TUXEDO) DMI on this laptop fails FlexiCharger
+          battery-hook registration even with DMI patching. The fork stays
+          pinned at 4.6.2 and cherry-picks fixes instead of tracking upstream.
+
+          Compare: https://github.com/tuxedocomputers/tuxedo-drivers/compare/v$TUX_MINE...v$TUX_UP
+
+          Opened by the \`upstream\` workflow, which reads tuxedo-drivers' tags daily."
+            fi
+          fi
+
+          if [ "$FAN_NEWER" = yes ]; then
+            fan_short=${FAN_UP_SHA:0:7}
+            title="upstream clevofan $fan_short"
+            if grep -Fxq "$title" <<<"$seen"; then
+              echo "already reported, nothing to send"
+            else
+              gh issue create --title "$title" --assignee "${{ github.repository_owner }}" \
+                --body "clevofan upstream's \`main\` moved to \`$FAN_UP_SHA\`; the vendored fork was last synced at \`$FAN_MINE_SHA\`.
+
+          Compare: https://github.com/simopil/clevofan/compare/$FAN_MINE_SHA...$FAN_UP_SHA
+
+          Opened by the \`upstream\` workflow, which reads clevofan's default-branch HEAD daily."
             fi
           fi
 
