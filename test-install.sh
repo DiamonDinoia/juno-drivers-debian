@@ -32,6 +32,8 @@ else
 fi
 version=$(dpkg-parsechangelog -l "$root/debian/changelog" -SVersion)
 
+"$root/test-maintscript.sh"
+
 # The upgrade leg below installs the previous release first and the new debs
 # over it: diamon7 is the newest release that ships the flexicharger restore
 # trio, so its debs must sit next to this build. The version is derived from
@@ -178,6 +180,11 @@ echo "ok    flexicharger trio on disk at $OLDVER (upgrade-leg baseline)"
 
 echo "upgrade to $VERSION over the $OLDVER install"
 apt-get install -y --no-install-recommends /build/*.deb </dev/null
+
+grep -q 'udevadm control --reload' /var/lib/dpkg/info/clevo-keyboard-dkms.postinst || {
+  echo "FAIL  generated clevo-keyboard-dkms postinst does not reload udev rules"
+  exit 1
+}
 
 rc=0
 for old in juno-drivers juno-drivers-local juno-grub; do

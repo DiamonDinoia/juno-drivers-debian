@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+#DEBHELPER#
+
+# An upgrade from diamon6/7 removes a recursive battery rule. Reload udev so
+# the running daemon stops executing the removed rule from its rules cache.
+if [ -e /run/udev/control ]; then
+	udevadm control --reload
+fi
