@@ -1,3 +1,14 @@
+juno-drivers (0.5.48.2+diamon10) unstable; urgency=low
+
+  * juno-drivers-diamon Depends: juno-kde-fancontrol, ec-sys-dkms; and
+    clevo-keyboard-dkms Depends: juno-drivers-diamon. Closes the 4-way Juno
+    Depends cycle together with those two packages and ec-sys-dkms, so
+    installing any one pulls in all four. No maintainer script here requires
+    another package configured first, so the cycle stays install-order-safe
+    (Debian Policy 7.2).
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Thu, 10 Sep 2026 10:23:46 -0400
+
 juno-drivers (0.5.48.2+diamon9) unstable; urgency=low
 
   * clevo-keyboard-dkms payload bumped to tuxedo-keyboard 4.6.2+diamon3

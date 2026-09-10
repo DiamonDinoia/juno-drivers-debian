@@ -78,6 +78,20 @@ for deb in "${debs[@]}"; do
   fi
 done
 
+# The other two forks that close the 4-way Juno Depends cycle: newest asset
+# per package by creation time, since a "builds" release keeps every past
+# version around and version strings do not sort lexically (diamon10 < diamon2).
+mkdir -p "$build/cycle"
+fetch_latest() {
+  repo=$1 pkg=$2
+  name=$(gh api "repos/$repo/releases/tags/builds" \
+    --jq "[.assets[] | select(.name | startswith(\"${pkg}_\"))] | max_by(.created_at) | .name")
+  [ -n "$name" ] && [ "$name" != null ] || { echo "FAIL  no $pkg asset on $repo's builds release"; exit 1; }
+  gh release download builds -R "$repo" -p "$name" -D "$build/cycle" --clobber >/dev/null
+}
+fetch_latest DiamonDinoia/juno-kde-fancontrol juno-kde-fancontrol
+fetch_latest DiamonDinoia/ec-sys-dkms ec-sys-dkms
+
 "$engine" run --rm -i -v "$build:/build:ro" -e "VERSION=$version" \
     -e "OLDVER=$oldver" \
     -e "JUNO_KEY_SHA=$juno_key_sha" -e "DEBS=${debs[*]}" -e "PAYLOAD=$payload" \
@@ -191,7 +205,9 @@ done
 echo "ok    flexicharger trio on disk at $OLDVER (upgrade-leg baseline)"
 
 echo "upgrade to $VERSION over the $OLDVER install"
-apt-get install -y --no-install-recommends /build/*.deb </dev/null
+# juno-drivers-diamon now Depends on juno-kde-fancontrol and ec-sys-dkms too
+# (the 4-way cycle): both are local-only debs, so they ride along here.
+apt-get install -y --no-install-recommends /build/*.deb /build/cycle/*.deb </dev/null
 
 grep -q 'udevadm control --reload' /var/lib/dpkg/info/clevo-keyboard-dkms.postinst || {
   echo "FAIL  generated clevo-keyboard-dkms postinst does not reload udev rules"
@@ -356,6 +372,10 @@ case " $cmdline " in
   *" adminparam=1 "*)
     echo "FAIL  negative control: pre-fix line kept the admin value"; rc=1 ;;
 esac
+# The negative control above plants files at paths juno-drivers-diamon owns
+# as conffiles; left behind, a later reinstall hits a conffile prompt dpkg
+# cannot answer under this script's redirected stdin.
+rm -f /etc/default/grub.d/11-juno-drivers.cfg /usr/share/junocomp/juno-grub-cmdline
 
 # Purging the new package must leave no /usr/src payload, no dkms
 # registration and no conffile: the full round trip of the bug it fixes.
@@ -375,5 +395,44 @@ for f in /usr/lib/clevo-keyboard-dkms/flexicharger-restore \
 done
 
 echo "ok    $DEBS at $VERSION, $(ls /build | wc -l) debs"
+
+# --- 4-way Juno Depends cycle: this repo's edge, then the whole cycle -----
+# (a) This repo's own pair, without juno-kde-fancontrol or ec-sys-dkms
+# available anywhere, must not install: juno-drivers-diamon Depends on both.
+if apt-get install -y /build/*.deb </dev/null >/tmp/pair-alone.log 2>&1; then
+  echo "FAIL  juno-drivers-diamon+clevo-keyboard-dkms installed without the rest of the cycle"
+  rc=1
+else
+  grep -Eqi 'juno-kde-fancontrol|ec-sys-dkms' /tmp/pair-alone.log ||
+    { echo "FAIL  install failure did not name the missing cycle packages"; rc=1; }
+  echo "ok    juno-drivers-diamon+clevo-keyboard-dkms alone are uninstallable: cycle deps unmet"
+fi
+apt-get -f install -y >/dev/null 2>&1 || true
+dpkg --remove --force-remove-reinstreq juno-drivers-diamon clevo-keyboard-dkms >/dev/null 2>&1 || true
+
+# (b) fetch the other two forks' latest builds-release assets and install
+# all four together: this is what closes the cycle for a real user.
+dpkg-query -W -f '${Status}' juno-archive-keyring 2>/dev/null | grep -q 'install ok installed' || {
+  curl -fsSL https://deb.junocomputers.com/gpg.key -o /etc/apt/keyrings/juno-repo.asc
+  echo "$JUNO_KEY_SHA  /etc/apt/keyrings/juno-repo.asc" | sha256sum -c - >/dev/null
+  cat > /etc/apt/sources.list.d/juno-repo.sources <<EOF
+Types: deb
+URIs: https://deb.junocomputers.com/
+Suites: /
+Signed-By: /etc/apt/keyrings/juno-repo.asc
+EOF
+  apt-get update -qq -o APT::Update::Error-Mode=any
+}
+apt-get install -y --no-install-recommends /build/*.deb /build/cycle/*.deb \
+  </dev/null >/tmp/cycle-all.log 2>&1 ||
+  { echo "FAIL  installing all four cycle packages together failed"; tail -20 /tmp/cycle-all.log; rc=1; }
+for pkg in juno-drivers-diamon clevo-keyboard-dkms juno-kde-fancontrol ec-sys-dkms; do
+  st=$(dpkg-query -W -f '${db:Status-Abbrev}' "$pkg" 2>/dev/null || true)
+  case "$st" in
+    ii*) echo "ok    $pkg installed (ii)" ;;
+    *) echo "FAIL  $pkg dpkg state '$st', not ii"; rc=1 ;;
+  esac
+done
+
 exit $rc
 SCRIPT

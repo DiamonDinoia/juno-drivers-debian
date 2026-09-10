@@ -54,6 +54,8 @@ Depends: juno-info,
 	ffmpegthumbnailer,
 	friendly-recovery,
 	clevo-keyboard-dkms,
+	juno-kde-fancontrol,
+	ec-sys-dkms,
 	${misc:Depends}
 Recommends: clevo-keyboard-controller, clevofan-dkms
 Provides: juno-drivers, juno-drivers-local, juno-grub
@@ -68,7 +70,7 @@ Package: clevo-keyboard-dkms
 Section: kernel
 Priority: optional
 Architecture: amd64
-Depends: dkms, kmod, ${misc:Depends}
+Depends: dkms, kmod, juno-drivers-diamon, ${misc:Depends}
 Recommends: linux-headers-amd64
 Conflicts: clevo-keyboard
 Replaces: clevo-keyboard
