@@ -43,7 +43,10 @@ jobs:
       # where a user would. A postinst that fails in a container would fail the
       # same way on a live system, so this test is what the apt repository's
       # own CI relies on for this package.
+      # test-install.sh fetches the sibling debs of the Depends cycle with gh.
       - name: Build and install-test the packages
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: ./test-install.sh
 
       - name: Publish the debs as release assets
