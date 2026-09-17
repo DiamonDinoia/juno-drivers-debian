@@ -1,5 +1,5 @@
 #!/bin/bash
-# Vendored from upstream juno-grub 0.1.24 (gitlab.com/junocomp/juno-grub),
+# Vendored from upstream juno-grub 0.1.26 (gitlab.com/junocomp/juno-grub),
 # reformatted; upstream-check.sh watches that repo's changelog for drift.
 
 product_model="$(sed -e 's/^\s*//g' -e 's/\s*$//g' "/sys/devices/virtual/dmi/id/product_name" | tr ' ,/-' '_')"
@@ -57,6 +57,6 @@ case "$product_model" in
     echo "button.lid_init_state=open i915.enable_fbc=1 i915.enable_psr=1"
     ;;
     S13|junotab4-wifi|junotab4_wifi)
-    echo "video=eDP-1:panel_orientation=left_side_up"
+    echo "video=eDP-1:panel_orientation=left_side_up mem_sleep_default=deep"
     ;;
 esac

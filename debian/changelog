@@ -1,3 +1,10 @@
+juno-drivers (0.5.48.2+diamon11) unstable; urgency=low
+
+  * Resynced juno-grub-cmdline with upstream juno-grub 0.1.26 (adds
+    mem_sleep_default=deep to junotab4-wifi).
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Wed, 16 Sep 2026 22:14:59 -0400
+
 juno-drivers (0.5.48.2+diamon10) unstable; urgency=low
 
   * juno-drivers-diamon Depends: juno-kde-fancontrol, ec-sys-dkms; and
