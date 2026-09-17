@@ -9,8 +9,8 @@ DESTDIR ?= debian/juno-drivers-diamon
 # tuxedo-keyboard checkout, archived at build time, never vendored here. The
 # sha is also named in the matching debian/changelog entry; keep them in sync.
 CLEVO_REPO ?= ../tuxedo-keyboard
-CLEVO_SHA := 61a47d1c83541e4bda39231bd0a43d55b10f8662
-CLEVO_VERSION := 4.6.2+diamon3
+CLEVO_SHA := 0129ee281016e21b39f8ae1a779718ddb3a6b768
+CLEVO_VERSION := 4.22.3+diamon1
 
 install:
 	install -dm755 $(DESTDIR)/usr/share/junocomp
@@ -41,7 +41,7 @@ install:
 # dkms.conf drifts from the names the packaging stages.
 bundle-source:
 	@git -C "$(CLEVO_REPO)" cat-file -e "$(CLEVO_SHA)^{commit}" 2>/dev/null || { \
-		echo "FATAL  pinned tuxedo-keyboard sha $(CLEVO_SHA) not in $(CLEVO_REPO);" >&2; \
+		echo "FATAL  pinned tuxedo-keyboard ref $(CLEVO_SHA) not in $(CLEVO_REPO);" >&2; \
 		echo "       fetch that checkout (team/integration) before building" >&2; exit 1; }
 	install -dm755 "$(DESTDIR)/usr/src/clevo-keyboard-$(CLEVO_VERSION)"
 	git -C "$(CLEVO_REPO)" archive "$(CLEVO_SHA)" Makefile src | \

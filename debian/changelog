@@ -1,3 +1,20 @@
+juno-drivers (0.5.48.2+diamon12) unstable; urgency=low
+
+  * clevo-keyboard-dkms payload rebased from tuxedo-keyboard 61a47d1
+    (4.6.2+diamon3) onto tuxedo-drivers v4.22.3, carrying the fork set: the
+    clevo renames and gate-disable, the 0x46 flexicharger preserve
+    (snapshot/re-apply around every CLEVO_CMD_SET_EVENTS_ENABLED site, ACPI
+    free only on success), cc4 access serialized by a mutex, flexicharger EC
+    error propagation, the WMI pkgbuf path returning -EOPNOTSUPP, cc4
+    threshold passthrough with the legacy-value snap confined to legacy ECs,
+    and power_supply_changed() after threshold writes. Carried set
+    runtime-verified on the host 2026-09-16: warning-clean trio build, the
+    hook registers, 85/75 threshold passthrough holds across reload. The pin
+    is the fork's rebased commit 0129ee28 (branch rebase-4.22.3, payload
+    version 4.22.3+diamon1).
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Wed, 16 Sep 2026 23:53:54 -0400
+
 juno-drivers (0.5.48.2+diamon11) unstable; urgency=low
 
   * Resynced juno-grub-cmdline with upstream juno-grub 0.1.26 (adds

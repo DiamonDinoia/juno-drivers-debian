@@ -147,8 +147,9 @@ jobs:
 
           Rebasing onto 4.23.0 was tried on 2026-09-08 and rejected: the
           Notebook-branded (non-TUXEDO) DMI on this laptop fails FlexiCharger
-          battery-hook registration even with DMI patching. The fork stays
-          pinned at 4.6.2 and cherry-picks fixes instead of tracking upstream.
+          battery-hook registration even with DMI patching. The 4.22.3 rebase
+          carries the fork's patch set; any newer upstream tag needs the
+          carried set re-verified before the pin moves again.
 
           Compare: https://github.com/tuxedocomputers/tuxedo-drivers/compare/v$TUX_MINE...v$TUX_UP
 

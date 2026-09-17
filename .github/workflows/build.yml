@@ -30,13 +30,18 @@ jobs:
 
       # Makefile's bundle-source archives $(CLEVO_SHA) out of ../tuxedo-keyboard;
       # provide exactly that commit from the fork. Depth-1 fetch of the pin
-      # itself, never a branch, so a moved branch can never smuggle in a tree.
+      # itself; a sha pin stays an immutable object, while a branch pin (a
+      # rebase in flight, re-pinned to a sha once it lands) needs the branch
+      # materialized locally by name or git archive cannot resolve it.
       - name: Fetch the pinned tuxedo-drivers payload
         run: |
           sha=$(sed -n 's/^CLEVO_SHA := //p' Makefile)
           mkdir ../tuxedo-keyboard
           git -C ../tuxedo-keyboard init -q
           git -C ../tuxedo-keyboard remote add origin https://github.com/DiamonDinoia/tuxedo-drivers.git
+          case "$sha" in
+            *[!0-9a-f]*) sha="$sha:refs/heads/$sha" ;;
+          esac
           git -C ../tuxedo-keyboard fetch -q --depth 1 origin "$sha"
 
       # Builds with dpkg-buildpackage and checks the result by installing it
