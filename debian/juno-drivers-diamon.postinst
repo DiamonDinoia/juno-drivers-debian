@@ -21,7 +21,11 @@ SYSTEMD_OFFLINE=1 systemctl enable thermald
 
 case "$product_model" in
 	PE60RNE_RND_RNC)
-		cp /usr/share/junocomp/juno-audio-fix.conf /etc/modprobe.d/juno-audio-fix.conf
+		# /etc/modprobe.d is admin-editable config (Policy 10.7.3); this file
+		# is not a dpkg conffile (its path is model-gated, decided at
+		# runtime), so only seed it, never reinstall over a local edit.
+		[ -e /etc/modprobe.d/juno-audio-fix.conf ] ||
+			cp /usr/share/junocomp/juno-audio-fix.conf /etc/modprobe.d/juno-audio-fix.conf
 		;;
 esac
 
