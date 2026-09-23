@@ -1,3 +1,24 @@
+juno-drivers (0.5.48.2+diamon13) unstable; urgency=low
+
+  * clevo-keyboard-dkms payload bumped from 0129ee28 (4.22.3+diamon1) to
+    900f06b1 (4.22.3+diamon2) on the same rebase-4.22.3 branch: the WMI
+    flexicharger preserve now treats a non-buffer cc4 reply (the WMI 0x04
+    integer 0xffffffff) as "no cc4" instead of -EIO, restoring the pre-0x46
+    snapshot/restore behavior over WMI-only hosts; the battery-hook legacy
+    and cc4 probes in clevo_battery_add() are serialized under
+    clevo_flexicharger_lock, closing a race against a concurrent 0x46
+    preserve window; and clevo_flexicharger_write() clears the held snapshot
+    flag after a successful threshold store, fixing a stale boot-threshold
+    restore on resume when an earlier cc4 restore had failed at interface
+    add.
+  * juno-drivers-diamon.postinst: the PE60RNE_RND_RNC audio-fix-conf branch
+    now seeds /etc/modprobe.d/juno-audio-fix.conf only when absent, in a
+    standalone seed_if_absent() function, instead of reinstalling over a
+    local edit on every postinst run.
+  * CI checkout actions pinned to a commit sha instead of a movable tag.
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Wed, 23 Sep 2026 17:03:13 -0400
+
 juno-drivers (0.5.48.2+diamon12) unstable; urgency=low
 
   * clevo-keyboard-dkms payload rebased from tuxedo-keyboard 61a47d1
