@@ -48,3 +48,10 @@ fi
 
 echo 'juno-drivers-diamon postinst checks passed'
 
+# CI actions pinned to a commit, not a movable tag (supply-chain: a tag can be
+# retargeted after review; a 40-char sha cannot).
+for wf in "$root"/.github/workflows/*.yml; do
+	unpinned=$(grep -Eo 'uses: [^ ]+@[^ #]+' "$wf" | grep -Ev '@[0-9a-f]{40}$' || true)
+	[ -z "$unpinned" ] || { echo "unpinned action in $wf: $unpinned" >&2; exit 1; }
+done
+echo 'CI action pins checked'
