@@ -1,3 +1,10 @@
+juno-drivers (0.5.48.2+diamon14) unstable; urgency=low
+
+  * Pin clevo-keyboard payload to 4.22.3+diamon3: RELOAD.sh reloads the
+    installed clevofan via modprobe and validates thresholds.
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Thu, 24 Sep 2026 11:45:03 -0400
+
 juno-drivers (0.5.48.2+diamon13) unstable; urgency=low
 
   * clevo-keyboard-dkms payload bumped from 0129ee28 (4.22.3+diamon1) to
