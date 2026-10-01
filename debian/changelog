@@ -1,3 +1,18 @@
+juno-drivers (0.5.48.2+diamon15) unstable; urgency=low
+
+  * clevo-keyboard-dkms payload rebased onto tuxedo-drivers v4.24.0
+    (4.24.0+diamon1, sha 85ae512): clevo_acpi switches to upstream's
+    platform_driver; fork patch set unchanged.
+  * clevo_acpi: allocate driver data and register the interface before
+    installing the ACPI notify handler, rolling back on failure, so a
+    failed probe leaves no handler and no early event is dropped (fork
+    patch on upstream v4.24.0).
+  * clevo-keyboard-dkms now requires kernel >= 6.6
+    (BUILD_EXCLUSIVE_KERNEL_MIN); DKMS skips older kernels instead of
+    failing the build.
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Thu, 01 Oct 2026 11:49:10 -0400
+
 juno-drivers (0.5.48.2+diamon14) unstable; urgency=low
 
   * Pin clevo-keyboard payload to 4.22.3+diamon3: RELOAD.sh reloads the

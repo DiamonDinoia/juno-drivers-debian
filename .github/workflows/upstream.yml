@@ -143,13 +143,11 @@ jobs:
               echo "already reported, nothing to send"
             else
               gh issue create --title "$title" --assignee "${{ github.repository_owner }}" \
-                --body "tuxedo-drivers upstream is at \`v$TUX_UP\`; this fork stays pinned at \`$TUX_MINE\` and cherry-picks.
+                --body "tuxedo-drivers upstream is at \`v$TUX_UP\`; this fork is pinned at \`$TUX_MINE\`.
 
-          Rebasing onto 4.23.0 was tried on 2026-09-08 and rejected: the
-          Notebook-branded (non-TUXEDO) DMI on this laptop fails FlexiCharger
-          battery-hook registration even with DMI patching. The 4.22.3 rebase
-          carries the fork's patch set; any newer upstream tag needs the
-          carried set re-verified before the pin moves again.
+          The fork rebases its patch set onto each new upstream tag.
+          Re-verify FlexiCharger (make test + container test) before moving
+          the pin.
 
           Compare: https://github.com/tuxedocomputers/tuxedo-drivers/compare/v$TUX_MINE...v$TUX_UP
 
