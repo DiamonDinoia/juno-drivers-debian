@@ -129,13 +129,20 @@ else
     echo "grub_newer=no"
 fi
 
-# clevo-keyboard-dkms deposes juno's clevo-keyboard; its driver base is
-# juno's 4.6.2 line, so anything newer than the 4.6.2-1 juno publishes means
-# the replacement went stale. Their repo is flat; the index lists one stanza
-# per published deb, so the watch compares the newest of them.
+# clevo-keyboard-dkms deposes juno's clevo-keyboard, so a newer deb there
+# means the driver it names changed and the replacement needs a review.
+# Their repo is flat; the index lists one stanza per published deb, so the
+# watch compares the newest of them.
+#
+# 5.0 (2026-10-13) reviewed: its delta over 4.6.2-1 is kernel 7.3 support
+# (struct acpi_driver removal, handled with a platform_driver plus
+# acpi_dev_install_notify_handler) minus the uniwill and legacy flexicharger
+# code. This fork's payload, tuxedo-drivers 4.24.0 based, already registers
+# clevo_acpi as a platform_driver and its WMI GUID and DMI tables are a
+# superset of 5.0's, so the baseline moves to 5.0 with nothing to port.
 KBD_PACKAGES=https://deb.junocomputers.com/Packages
 
-kbd_mine=4.6.2-1
+kbd_mine=5.0
 kbd_list=$(curl -fsSL "$KBD_PACKAGES" |
     awk '/^Package: clevo-keyboard$/{f=1; next} /^Package: /{f=0} f && /^Version: /{print $2}')
 [ -n "$kbd_list" ] || { echo "could not read juno's clevo-keyboard version" >&2; exit 1; }

@@ -1,3 +1,13 @@
+juno-drivers (0.5.48.2+diamon16) unstable; urgency=low
+
+  * Reviewed juno's clevo-keyboard 5.0 deb against the vendored payload:
+    its only functional delta is kernel 7.3 support, which the tuxedo-drivers
+    4.24.0 based payload already covers, and its device tables are a subset
+    of the payload's. Nothing to port; the clevo-keyboard watch baseline in
+    upstream-check.sh moves from 4.6.2-1 to 5.0.
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Tue, 13 Oct 2026 16:05:23 -0400
+
 juno-drivers (0.5.48.2+diamon15) unstable; urgency=low
 
   * clevo-keyboard-dkms payload rebased onto tuxedo-drivers v4.24.0
