@@ -1,0 +1,6 @@
+# Diamon5-9 changelog entries were authored with a local-only address and are
+# kept verbatim as published history; lintian forbids rewriting old entries.
+clevo-keyboard-dkms: bogus-mail-host-in-debian-changelog marco@localhost *
+# The DKMS payload keeps upstream tuxedo-keyboard's src/ directory layout
+# verbatim under /usr/src so the patched tree builds unmodified.
+clevo-keyboard-dkms: repeated-path-segment src *

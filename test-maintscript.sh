@@ -9,7 +9,7 @@ check_postinst()
 
 	# Anchored, not a substring match: a mutation that comments the guard
 	# out (keeping the words on disk) must not still "find" them.
-	grep -Eq '^if \[ -e /run/udev/control \]; then$' "$postinst" || return 1
+	grep -Eq '^if \[ -e /run/udev/control \] && command -v udevadm >/dev/null; then$' "$postinst" || return 1
 	grep -Eq '^	udevadm control --reload$' "$postinst" || return 1
 }
 
@@ -28,8 +28,8 @@ fi
 # anchored check above must not.
 cp "$root/debian/clevo-keyboard-dkms.postinst" "$tmp/postinst"
 sed -i \
-	-e 's/^if \[ -e \/run\/udev\/control \]; then$/# if [ -e \/run\/udev\/control ]; then/' \
-	-e 's/^\tudevadm control --reload$/\t# udevadm control --reload/' \
+	-e 's/^if \[ -e \/run\/udev\/control \] && command -v udevadm >\/dev\/null; then$/# if [ -e \/run\/udev\/control ] \&\& command -v udevadm >\/dev\/null; then/' \
+	-e 's/^	udevadm control --reload$/	# udevadm control --reload/' \
 	"$tmp/postinst"
 if check_postinst "$tmp/postinst"; then
 	echo 'commented-out udev reload mutation passed' >&2

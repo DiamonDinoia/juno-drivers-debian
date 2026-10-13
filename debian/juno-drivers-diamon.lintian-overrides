@@ -1,0 +1,6 @@
+# Diamon5-9 changelog entries were authored with a local-only address and are
+# kept verbatim as published history; lintian forbids rewriting old entries.
+juno-drivers-diamon: bogus-mail-host-in-debian-changelog marco@localhost *
+# The legacy disable-cpu-turbo unit was enabled outside deb-systemd-helper, so
+# only systemctl can remove its enable symlinks from old installations.
+juno-drivers-diamon: maintainer-script-calls-systemctl *

@@ -3,7 +3,6 @@ Section: metapackages
 Priority: optional
 Build-Depends: debhelper-compat (= 13), dh-dkms, git
 Maintainer: Marco Barbone <mbarbone@flatironinstitute.org>
-XSBC-Original-Maintainer: Giovanni Caligaris <usa@junocomputers.com>
 
 Package: juno-drivers-diamon
 Section: metapackages
@@ -62,7 +61,7 @@ Provides: juno-drivers, juno-drivers-local, juno-grub
 Conflicts: juno-drivers, juno-drivers-local, juno-grub
 Replaces: juno-drivers, juno-drivers-local, juno-grub
 Homepage: https://github.com/DiamonDinoia/juno-drivers-debian
-Description: Debian Drivers for Juno Computers.
+Description: Debian Drivers for Juno Computers
  This fork's config package: the upstream driver payload plus the local GRUB
  cmdline and CPU turbo policy integration.
 
