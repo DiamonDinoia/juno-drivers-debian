@@ -1,3 +1,17 @@
+juno-drivers (0.5.48.2+diamon17) unstable; urgency=low
+
+  * Lintian cleanup: guard udevadm reload in clevo-keyboard-dkms.postinst
+    behind command -v, fix control metadata (drop XSBC-Original-Maintainer,
+    synopsis trailing period), and override the false positives:
+    bogus-mail-host on the published diamon5-9 changelog entries,
+    repeated-path-segment in the DKMS payload layout, and the direct
+    systemctl disable of the legacy disable-cpu-turbo unit, which was
+    enabled outside deb-systemd-helper so only systemctl removes its links.
+  * The swap test in test-install.sh registers the dkms version Juno's
+    installed clevo-keyboard carries (5.0) instead of assuming 4.6.2.
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Tue, 13 Oct 2026 16:29:58 -0400
+
 juno-drivers (0.5.48.2+diamon16) unstable; urgency=low
 
   * Reviewed juno's clevo-keyboard 5.0 deb against the vendored payload:
