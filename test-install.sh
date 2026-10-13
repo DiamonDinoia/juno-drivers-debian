@@ -164,24 +164,31 @@ if [ "$swap_mode" = real ]; then
   apt-get install -y --no-install-recommends "$junokbd"/clevo-keyboard_*.deb >/dev/null </dev/null ||
     echo "note  upstream clevo-keyboard unpacked but not configured here (expected in a container)"
   rm -rf "$junokbd"
-  # A real machine ends up with clevo-keyboard/4.6.2 registered: juno's
-  # postinst gets that far before KDIR stops it. If the container stopped
-  # earlier, finish only the registration — juno's prerm removes only what
-  # dkms shows it, and the swap must exercise that real removal.
-  if ! dkms status -m clevo-keyboard -v 4.6.2 2>/dev/null | grep -q .; then
-    [ -d /usr/src/clevo-keyboard-4.6.2 ] ||
-      cp -a /usr/share/clevo-keyboard/4.6.2 /usr/src/clevo-keyboard-4.6.2
-    dkms add -m clevo-keyboard -v 4.6.2 >/dev/null
+  # A real machine ends up with the dkms version juno's own postinst
+  # targets registered: juno's postinst gets that far before KDIR stops
+  # it. Derive the version from the installed postinst rather than
+  # hardcoding it: juno's deb moved 4.6.2-1 -> 5.0, and registering a
+  # second, stale version here trips juno's prerm, which removes only one
+  # version and orphans the rest. If the container stopped earlier, finish
+  # only the registration — juno's prerm removes only what dkms shows it,
+  # and the swap must exercise that real removal.
+  jver=$(sed -n "s/^ *cd \([0-9.]*\);/\1/p" /var/lib/dpkg/info/clevo-keyboard.postinst | tail -1)
+  [ -n "$jver" ] || { echo "FAIL  setup: no dkms version found in juno's postinst"; exit 1; }
+  if ! dkms status -m clevo-keyboard -v "$jver" 2>/dev/null | grep -q .; then
+    [ -d "/usr/src/clevo-keyboard-$jver" ] ||
+      cp -a "/usr/share/clevo-keyboard/$jver" "/usr/src/clevo-keyboard-$jver"
+    dkms add -m clevo-keyboard -v "$jver" >/dev/null
   fi
   # The stock world must exist or the swap asserts below prove nothing.
   dpkg-query -W -f '${db:Status-Abbrev}\n' clevo-keyboard 2>/dev/null | grep -q '^i' ||
     { echo "FAIL  setup: juno's clevo-keyboard was never unpacked"; exit 1; }
-  [ -L /var/lib/dkms/clevo-keyboard/4.6.2/source ] ||
-    { echo "FAIL  setup: no 4.6.2 dkms registration; the swap test would be vacuous"; exit 1; }
-  echo "setup juno world: clevo-keyboard ($(dpkg-query -W -f '${db:Status-Abbrev}' clevo-keyboard | tr -d ' ')), unowned /usr/src/clevo-keyboard-4.6.2, dkms registration 4.6.2"
+  [ -L "/var/lib/dkms/clevo-keyboard/$jver/source" ] ||
+    { echo "FAIL  setup: no $jver dkms registration; the swap test would be vacuous"; exit 1; }
+  echo "setup juno world: clevo-keyboard ($(dpkg-query -W -f '${db:Status-Abbrev}' clevo-keyboard | tr -d ' ')), unowned /usr/src/clevo-keyboard-$jver, dkms registration $jver"
 else
   # Simulate the wreckage a stock machine carries, then emulate juno's prerm;
   # dpkg's real removal mechanics are covered by the metadata asserts.
+  jver=4.6.2
   mkdir -p /usr/src/clevo-keyboard-4.6.2 /var/lib/dkms/clevo-keyboard/4.6.2
   echo junk > /usr/src/clevo-keyboard-4.6.2/clevo_keyboard.c
   ln -s /usr/src/clevo-keyboard-4.6.2 /var/lib/dkms/clevo-keyboard/4.6.2/source
@@ -249,11 +256,11 @@ d=$(ls -d /usr/src/clevo-keyboard-*/dkms.conf 2>/dev/null || true)
 [ -n "$d" ] || { echo "FAIL  no /usr/src/clevo-keyboard-*/dkms.conf payload"; rc=1; }
 [ -z "$d" ] || [ "clevo-keyboard-$(sed -n 's/^PACKAGE_VERSION=//p' "$d")" = "$(basename "$(dirname "$d")")" ] ||
   { echo "FAIL  dkms.conf version and the /usr/src dir name disagree"; rc=1; }
-# (iii) no dkms tree for juno's 4.6.2 and no phantom links under /var/lib/dkms.
-if [ -e /var/lib/dkms/clevo-keyboard/4.6.2 ]; then
-  echo "FAIL  juno's clevo-keyboard/4.6.2 dkms tree survived the swap"; rc=1
+# (iii) no dkms tree for juno's own version and no phantom links under /var/lib/dkms.
+if [ -e "/var/lib/dkms/clevo-keyboard/$jver" ]; then
+  echo "FAIL  juno's clevo-keyboard/$jver dkms tree survived the swap"; rc=1
 else
-  echo "ok    no clevo-keyboard/4.6.2 left in /var/lib/dkms"
+  echo "ok    no clevo-keyboard/$jver left in /var/lib/dkms"
 fi
 phantoms=$(find /var/lib/dkms -xtype l -print 2>/dev/null || true)
 [ -z "$phantoms" ] || { echo "FAIL  phantom symlinks in /var/lib/dkms: $phantoms"; rc=1; }
