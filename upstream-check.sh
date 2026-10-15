@@ -137,7 +137,7 @@ fi
 # 5.0 (2026-10-13) reviewed: its delta over 4.6.2-1 is kernel 7.3 support
 # (struct acpi_driver removal, handled with a platform_driver plus
 # acpi_dev_install_notify_handler) minus the uniwill and legacy flexicharger
-# code. This fork's payload, tuxedo-drivers 4.24.0 based, already registers
+# code. This fork's payload, tuxedo-drivers 4.25.0 based, already registers
 # clevo_acpi as a platform_driver and its WMI GUID and DMI tables are a
 # superset of 5.0's, so the baseline moves to 5.0 with nothing to port.
 KBD_PACKAGES=https://deb.junocomputers.com/Packages
