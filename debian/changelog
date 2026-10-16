@@ -1,3 +1,10 @@
+juno-drivers (0.5.48.2+diamon19) unstable; urgency=low
+
+  * Resynced juno-grub-cmdline with upstream juno-grub 0.1.28 (probes
+    dmesg for IT8613E, adds acpi_enforce_resources=lax).
+
+ -- Marco Barbone <mbarbone@flatironinstitute.org>  Fri, 16 Oct 2026 15:08:24 -0400
+
 juno-drivers (0.5.48.2+diamon18) unstable; urgency=low
 
   * clevo-keyboard-dkms payload rebased onto tuxedo-drivers v4.25.0

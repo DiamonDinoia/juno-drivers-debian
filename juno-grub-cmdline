@@ -1,10 +1,11 @@
 #!/bin/bash
-# Vendored from upstream juno-grub 0.1.26 (gitlab.com/junocomp/juno-grub),
+# Vendored from upstream juno-grub 0.1.28 (gitlab.com/junocomp/juno-grub),
 # reformatted; upstream-check.sh watches that repo's changelog for drift.
 
 product_model="$(sed -e 's/^\s*//g' -e 's/\s*$//g' "/sys/devices/virtual/dmi/id/product_name" | tr ' ,/-' '_')"
 tablet="$(awk '{print substr($0,0,3);}' /sys/class/dmi/id/bios_version)"
 tablet2="$(strings /sys/firmware/acpi/tables/DSDT | grep -o -m 1 -i 'NSA2513' | sort)"
+it87="$(dmesg | grep -ioh it8613E | awk '{ print tolower($0) }')"
 
 case "$product_model" in
     N130BU|N131BU|N130WU|N131WU|N13xWU|N13xZU|N140BU|N141BU|N140WU|N141WU|N14xWU|N140ZU|N141ZU|N14xZU|N13_N140ZU|N140ZU|N141ZU|N140CU|N141CU|N14xCU|N150ZU|N151ZU|N15xZU|N150CU|N151CU|N15xCU|N240GU|N240WU|N24_25GU|NL40GU|NL41GU|NL4xGU|NL40_50GU|NL40CU|NL41CU|NL4xCU|NL40_50CU)
@@ -58,5 +59,11 @@ case "$product_model" in
     ;;
     S13|junotab4-wifi|junotab4_wifi)
     echo "video=eDP-1:panel_orientation=left_side_up mem_sleep_default=deep"
+    ;;
+esac
+
+case "$it87" in
+    it8613e)
+    echo "acpi_enforce_resources=lax"
     ;;
 esac
